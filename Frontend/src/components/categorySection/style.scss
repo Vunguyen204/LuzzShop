@@ -1,0 +1,39 @@
+.category-section {
+  padding: 60px;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--primary-color);
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .category-card {
+    text-decoration: none;
+
+    .category-content {
+      height: 160px;
+      background: var(--primary-light);
+      border-radius: 12px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      transition: 0.3s;
+
+      h3 {
+        color: var(--primary-dark);
+      }
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+    }
+  }
+}

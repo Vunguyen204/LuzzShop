@@ -1,0 +1,10 @@
+.product-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 10px;
+
+  .price {
+    color: red;
+    font-weight: bold;
+  }
+}

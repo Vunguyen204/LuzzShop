@@ -1,0 +1,27 @@
+.product-section {
+  padding: 60px;
+
+  .section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 30px;
+
+    h2 {
+      color: var(--primary-color);
+    }
+
+    span {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+  }
+}
