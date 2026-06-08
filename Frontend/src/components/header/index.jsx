@@ -3,22 +3,24 @@ import axios from "axios";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { ROUTERS } from "../../routes";
 
 const Header = () => {
   const [user, setUser] = useState(null);
   const [menus, setMenus] = useState([]);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchMenus = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
+        const res = await axios.get("http://localhost:5000/api/menus");
         setMenus(res.data);
       } catch (error) {
-        console.error("Lỗi khi lấy danh mục:", error);
+        console.error("Lỗi khi lấy menu:", error);
       }
     };
 
-    fetchCategories();
+    fetchMenus();
   }, []);
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const Header = () => {
           <Link to="#">Trợ giúp</Link>
           <Link to="#">Danh sách sản phẩm yêu thích</Link>
           <Link to="#">Trình theo dõi đơn hàng</Link>
-        <img src="/img/vn.png" alt="VN" className="flag" />
+          <img src="/img/vn.png" alt="VN" className="flag" />
         </div>
       </div>
 
@@ -59,13 +61,13 @@ const Header = () => {
           <ul>
             {menus.length > 0 ? (
               menus.map((menu) => (
-                <li key={menu.category_id}>
-                  <Link to={menu.slug}>{menu.category_name}</Link>
+                <li key={menu.menu_id}>
+                  <Link to={menu.slug}>{menu.menu_name}</Link>
                 </li>
               ))
             ) : (
               <li>
-                <span>Chưa có danh mục</span>
+                <span>Chưa có menu</span>
               </li>
             )}
           </ul>
@@ -81,9 +83,30 @@ const Header = () => {
 
           {user ? (
             <>
-              <Link to="/profile" className="icon-btn">
-                <i className="fa fa-user"></i>
-              </Link>
+              <div className="user-dropdown">
+                <button
+                  className="icon-btn user-icon"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                >
+                  <i className="fa fa-user"></i>
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className="user-dropdown__menu">
+                    <Link to="/profile">Trang cá nhân</Link>
+
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        window.location.href = "/";
+                      }}
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <Link to="/wishlist" className="icon-btn">
                 <i className="fa fa-heart"></i>
@@ -95,11 +118,11 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="login-btn">
+              <Link to={ROUTERS.USER.LOGIN} className="login-btn">
                 Đăng nhập
               </Link>
 
-              <Link to="/register" className="register-btn">
+              <Link to={ROUTERS.USER.REGISTER} className="register-btn">
                 Đăng ký
               </Link>
             </>

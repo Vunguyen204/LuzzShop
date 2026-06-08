@@ -26,6 +26,7 @@
           text-decoration: underline;
         }
       }
+
       .flag {
         width: 30px;
         // display: flex;
@@ -33,7 +34,7 @@
         // margin-right: 20px;
         margin-bottom: 2px;
         border: solid 0.5px black;
-    }
+      }
     }
 
     &__right {
@@ -74,7 +75,7 @@
         list-style: none;
         margin: 0;
         padding: 0;
-        
+
         li {
           position: relative;
 
@@ -154,6 +155,48 @@
       .register-btn {
         color: #fff;
         background: var(--primary-color);
+      }
+
+      .user-dropdown {
+        position: relative;
+
+        .user-icon {
+          border: none;
+          background: transparent;
+          cursor: pointer;
+        }
+
+        &__menu {
+          position: absolute;
+          top: 36px;
+          right: -55px;
+          width: 150px;
+          background: #fff;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+          border-radius: 8px;
+          z-index: 999;
+          overflow: hidden;
+
+          a,
+          button {
+            width: 100%;
+            height: 40px;
+            border: none;
+            background: #fff;
+            color: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+
+            &:hover {
+              background: var(--primary-light);
+              color: var(--primary-color);
+            }
+          }
+        }
       }
 
       .icon-btn {
