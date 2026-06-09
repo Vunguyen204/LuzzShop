@@ -1,12 +1,14 @@
 import HomePage from "../pages/homePage";
 import LoginPage from "../pages/loginPage";
 import RegisterPage from "../pages/registerPage";
+import ProductPage from "../pages/productPage";
 
 export const ROUTERS = {
   USER: {
     HOME: "/",
     LOGIN: "/login",
     REGISTER: "/register",
+    PRODUCT: "/products",
   },
 };
 
@@ -22,5 +24,9 @@ export const userRoutes = [
   {
     path: ROUTERS.USER.REGISTER,
     component: RegisterPage,
+  },
+  {
+    path: ROUTERS.USER.PRODUCT,
+    component: ProductPage,
   },
 ];

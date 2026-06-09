@@ -9,6 +9,7 @@ const Header = () => {
   const [user, setUser] = useState(null);
   const [menus, setMenus] = useState([]);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -19,8 +20,19 @@ const Header = () => {
         console.error("Lỗi khi lấy menu:", error);
       }
     };
-
     fetchMenus();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/categories");
+        setCategories(res.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+      }
+    };
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -61,8 +73,26 @@ const Header = () => {
           <ul>
             {menus.length > 0 ? (
               menus.map((menu) => (
-                <li key={menu.menu_id}>
+                <li
+                  key={menu.menu_id}
+                  className={
+                    menu.menu_name === "Sản phẩm" ? "has-dropdown" : ""
+                  }
+                >
                   <Link to={menu.slug}>{menu.menu_name}</Link>
+
+                  {menu.menu_name === "Sản phẩm" && (
+                    <div className="product-dropdown">
+                      {categories.map((category) => (
+                        <Link
+                          key={category.category_id}
+                          to={`/category/${category.slug}`}
+                        >
+                          {category.category_name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))
             ) : (

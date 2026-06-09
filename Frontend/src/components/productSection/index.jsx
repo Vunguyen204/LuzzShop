@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "../ProductCard";
+import { Link } from "react-router-dom";
 import "./style.scss";
 
 function ProductSection() {
@@ -20,7 +21,7 @@ function ProductSection() {
       <div className="container">
         <div className="section-title">
           <h2>Sản phẩm nổi bật</h2>
-          <span>Xem tất cả</span>
+          <Link to="/products"><span>Xem tất cả</span></Link>
         </div>
 
         <div className="product-grid">

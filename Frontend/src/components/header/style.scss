@@ -83,7 +83,7 @@
             color: var(--text-color);
             text-decoration: none;
             font-size: 16px;
-            font-weight: 650;
+            font-weight: 600;
             text-transform: uppercase;
           }
 
@@ -104,6 +104,47 @@
 
           &:hover::after {
             width: 100%;
+          }
+        }
+      }
+    }
+
+    .has-dropdown {
+      position: relative;
+
+      &:hover {
+        .product-dropdown {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+      }
+
+      .product-dropdown {
+        position: absolute;
+        top: 52px;
+        left: 0;
+        width: 230px;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: 0.25s;
+
+        a {
+          display: block;
+          padding: 14px 18px;
+          color: #333;
+          font-size: 14px;
+          font-weight: 500;
+          text-transform: none;
+          border-bottom: 1px solid #eee;
+
+          &:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
           }
         }
       }

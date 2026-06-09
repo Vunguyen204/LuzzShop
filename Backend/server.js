@@ -4,8 +4,11 @@ require("dotenv").config();
 
 const db = require("./config/db");
 const menuRoutes = require("./routes/menuRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
+const brandRoutes = require("./routes/brandRoutes");
+
 
 const app = express();
 
@@ -14,7 +17,9 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/menus", menuRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/brands", brandRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend LuzzerShop đang chạy");
