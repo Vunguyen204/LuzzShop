@@ -1,17 +1,6 @@
 .product-page {
   background: #fff;
 
-  .breadcrumb {
-    height: 65px;
-    background: #f4f4f4;
-    padding: 0 90px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #333;
-    font-size: 15px;
-  }
-
   .product-layout {
     display: grid;
     grid-template-columns: 280px 1fr;

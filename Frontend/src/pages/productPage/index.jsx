@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import ProductCard from "../../components/ProductCard";
+import Breadcrumb from "../../components/Breadcrumb";
 import "./style.scss";
 
 function ProductPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const { slug } = useParams();
   const [brands, setBrands] = useState([]);
 
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -42,6 +45,12 @@ function ProductPage() {
         return "";
     }
   };
+  const currentCategory =
+    selectedCategories.length === 1
+      ? categories.find(
+          (c) => Number(c.category_id) === Number(selectedCategories[0]),
+        )
+      : null;
 
   useEffect(() => {
     axios
@@ -56,6 +65,18 @@ function ProductPage() {
       .then((res) => setCategories(res.data))
       .catch((err) => console.log("Lỗi lấy danh mục:", err));
   }, []);
+
+  useEffect(() => {
+    if (slug && categories.length > 0) {
+      const category = categories.find((item) => item.slug === slug);
+
+      if (category) {
+        setTimeout(() => {
+          setSelectedCategories([Number(category.category_id)]);
+        }, 0);
+      }
+    }
+  }, [slug, categories]);
 
   useEffect(() => {
     axios
@@ -112,11 +133,7 @@ function ProductPage() {
       <Header />
 
       <div className="product-page">
-        <div className="breadcrumb">
-          <span>Trang chủ</span>
-          <span>›</span>
-          <span>Sản phẩm</span>
-        </div>
+        <Breadcrumb />
 
         <div className="product-layout">
           <aside className="filter-sidebar">
@@ -185,13 +202,13 @@ function ProductPage() {
                         <span
                           key={categoryId}
                           className="filter-tag"
-                          onClick={() =>
+                          onClick={() => {
                             setSelectedCategories(
                               selectedCategories.filter(
                                 (id) => id !== categoryId,
                               ),
-                            )
-                          }
+                            );
+                          }}
                         >
                           × {category?.category_name}
                         </span>
@@ -325,7 +342,12 @@ function ProductPage() {
 
           <main className="product-content">
             <div className="product-content__top">
-              <h2>SẢN PHẨM ({filteredProducts.length})</h2>
+              <h2>
+                {currentCategory
+                  ? currentCategory.category_name.toUpperCase()
+                  : "TẤT CẢ SẢN PHẨM"}
+                ({filteredProducts.length})
+              </h2>
 
               <div className="sort-box">
                 <span>Sắp xếp:</span>

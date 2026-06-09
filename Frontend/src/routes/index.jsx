@@ -9,6 +9,7 @@ export const ROUTERS = {
     LOGIN: "/login",
     REGISTER: "/register",
     PRODUCT: "/products",
+    CATEGORY: "/category/:slug",
   },
 };
 
@@ -27,6 +28,10 @@ export const userRoutes = [
   },
   {
     path: ROUTERS.USER.PRODUCT,
+    component: ProductPage,
+  },
+  {
+    path: ROUTERS.USER.CATEGORY,
     component: ProductPage,
   },
 ];

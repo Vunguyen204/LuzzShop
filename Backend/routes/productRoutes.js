@@ -18,6 +18,28 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/category/:slug", (req, res) => {
+  const { slug } = req.params;
+
+  const sql = `
+    SELECT p.*
+    FROM products p
+    JOIN categories c ON p.category_id = c.category_id
+    WHERE c.slug = ?
+  `;
+
+  db.query(sql, [slug], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi lấy sản phẩm theo danh mục",
+        error: err,
+      });
+    }
+
+    res.json(results);
+  });
+});
+
 // Lấy chi tiết sản phẩm theo id
 router.get("/:id", (req, res) => {
     const productId = req.params.id;
