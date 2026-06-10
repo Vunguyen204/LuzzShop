@@ -22,7 +22,7 @@ function CategorySection() {
           {categories.map((item) => (
             <Link
               key={item.category_id}
-              to={`/category/${item.category_id}`}
+              to={`/category/${item.slug}`}
               className="category-card"
             >
               <div className="category-content">

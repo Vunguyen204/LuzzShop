@@ -120,9 +120,21 @@
         }
       }
 
+      &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 30px;
+
+        background: transparent;
+        pointer-events: auto;
+      }
+
       .product-dropdown {
         position: absolute;
-        top: 52px;
+        top: 49px;
         left: 0;
         width: 230px;
         background: #fff;

@@ -1,12 +1,12 @@
 import Banner from "../../components/banner";
-// import CategorySection from "../../components/categorySection";
+import CategorySection from "../../components/categorySection";
 import ProductSection from "../../components/productSection";
 
 function HomePage() {
   return (
     <>
       <Banner />
-      {/* <CategorySection /> */}
+      <CategorySection />
       <ProductSection />
     </>
   );

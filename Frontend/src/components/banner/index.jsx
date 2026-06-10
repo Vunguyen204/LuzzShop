@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./style.scss";
 
 function Banner() {
@@ -17,7 +18,7 @@ function Banner() {
           dành cho người mới bắt đầu và vận động viên chuyên nghiệp.
         </p>
 
-        <button>Mua ngay</button>
+        <button><Link to="/products">Mua ngay</Link></button>
       </div>
 
       <div className="hero-banner__image">
