@@ -4,10 +4,10 @@ import "./style.scss";
 function ProductCard({ product }) {
   return (
     <div className="product-card">
-      <Link to={`/product/${product.product_id}`}>
+      <Link to={`/products/${product.product_id}`}>
         <div className="product-card__image">
           <img
-            src={product.image_url}
+            src={`http://localhost:5000${product.image_url}`}
             alt={product.product_name}
           />
 

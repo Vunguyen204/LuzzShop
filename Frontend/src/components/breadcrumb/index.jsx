@@ -17,7 +17,7 @@ const breadcrumbMap = {
   register: "Đăng ký",
 };
 
-function Breadcrumb() {
+function Breadcrumb({ productName }) {
   const location = useLocation();
 
   const pathnames = location.pathname
@@ -32,16 +32,28 @@ function Breadcrumb() {
         {pathnames.map((value, index) => {
           const to =
             "/" +
-            pathnames
-              .slice(0, index + 1)
-              .join("/");
+            pathnames.slice(0, index + 1).join("/");
+
+          const isLast =
+            index === pathnames.length - 1;
+
+          let label =
+            breadcrumbMap[value] || value;
+
+          if (
+            isLast &&
+            productName &&
+            /^\d+$/.test(value)
+          ) {
+            label = productName;
+          }
 
           return (
             <span key={to}>
               <i className="fa fa-angle-right"></i>
 
               <Link to={to}>
-                {breadcrumbMap[value] || value}
+                {label}
               </Link>
             </span>
           );

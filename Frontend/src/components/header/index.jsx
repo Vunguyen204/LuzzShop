@@ -60,7 +60,7 @@ const Header = () => {
           <Link to="#">Trợ giúp</Link>
           <Link to="#">Danh sách sản phẩm yêu thích</Link>
           <Link to="#">Trình theo dõi đơn hàng</Link>
-          <img src="/img/vn.png" alt="VN" className="flag" />
+          <img src="/images/vn.png" alt="VN" className="flag" />
         </div>
       </div>
 
