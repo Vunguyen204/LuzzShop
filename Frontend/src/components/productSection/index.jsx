@@ -9,9 +9,9 @@ function ProductSection() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/products")
+      .get("http://localhost:5000/api/products/featured")
       .then((res) => {
-        setProducts(res.data.slice(0, 8));
+        setProducts(res.data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -21,15 +21,14 @@ function ProductSection() {
       <div className="container">
         <div className="section-title">
           <h2>Sản phẩm nổi bật</h2>
-          <Link to="/products"><span>Xem tất cả</span></Link>
+          <Link to="/products">
+            <span>Xem tất cả</span>
+          </Link>
         </div>
 
         <div className="product-grid">
           {products.map((product) => (
-            <ProductCard
-              key={product.product_id}
-              product={product}
-            />
+            <ProductCard key={product.product_id} product={product} />
           ))}
         </div>
       </div>

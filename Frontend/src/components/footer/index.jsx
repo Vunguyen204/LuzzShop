@@ -1,32 +1,48 @@
-import "./style.scss";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
+import "./style.scss";
 
 function Footer() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/categories")
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <footer className="footer">
       <div className="footer__top">
         <div className="footer__column">
           <h3>LuzzerShop</h3>
           <p>
-            Cửa hàng thể thao chuyên cung cấp vợt Pickleball, giày, quần áo
-            và phụ kiện chính hãng.
+            Cửa hàng thể thao chuyên cung cấp vợt Pickleball, giày,
+            quần áo và phụ kiện chính hãng.
           </p>
         </div>
 
         <div className="footer__column">
           <h4>Sản phẩm</h4>
-          <Link to="/category/1">Vợt Pickleball</Link>
-          <Link to="/category/2">Bóng Pickleball</Link>
-          <Link to="/category/3">Giày thể thao</Link>
-          <Link to="/category/4">Phụ kiện</Link>
+
+          {categories.map((category) => (
+            <Link
+              key={category.category_id}
+              to={`/category/${category.slug}`}
+            >
+              {category.category_name}
+            </Link>
+          ))}
         </div>
 
         <div className="footer__column">
           <h4>Hỗ trợ</h4>
-          <Link to="#">Trợ giúp</Link>
-          <Link to="#">Theo dõi đơn hàng</Link>
-          <Link to="#">Chính sách đổi trả</Link>
-          <Link to="#">Chính sách bảo hành</Link>
+          <Link to="/help">Trợ giúp</Link>
+          <Link to="/tracking">Theo dõi đơn hàng</Link>
+          <Link to="/return-policy">Chính sách đổi trả</Link>
+          <Link to="/warranty-policy">Chính sách bảo hành</Link>
         </div>
 
         <div className="footer__column">

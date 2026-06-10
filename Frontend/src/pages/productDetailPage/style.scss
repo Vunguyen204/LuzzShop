@@ -61,7 +61,7 @@
     }
 
     .stock {
-      color: #f04b23;
+      color: var(--primary-color);
     }
   }
 
@@ -73,7 +73,7 @@
     .current-price {
       font-size: 30px;
       font-weight: 800;
-      color: #e60023;
+      color: var(--primary-color);
       margin-right: 14px;
     }
 

@@ -101,7 +101,7 @@ function ProductDetailPage() {
             </span>
             <span>|</span>
             <span>
-              Thương hiệu: <b>{product.brand_name || "LuzzerShop"}</b>
+              Thương hiệu: <b>{product.brand_name}</b>
             </span>
             <span>|</span>
             <span>
