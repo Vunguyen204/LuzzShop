@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
 import ProductCard from "../../components/ProductCard";
 import Breadcrumb from "../../components/Breadcrumb";
 import "./style.scss";
@@ -130,7 +128,6 @@ function ProductPage() {
 
   return (
     <>
-      <Header />
 
       <div className="product-page">
         <Breadcrumb />
@@ -377,7 +374,6 @@ function ProductPage() {
         </div>
       </div>
 
-      <Footer />
     </>
   );
 }
