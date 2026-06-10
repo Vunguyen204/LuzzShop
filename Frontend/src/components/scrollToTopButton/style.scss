@@ -1,0 +1,25 @@
+.scroll-top-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--primary-color);
+  color: #fff;
+
+  font-size: 20px;
+  cursor: pointer;
+
+  z-index: 9999;
+
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
