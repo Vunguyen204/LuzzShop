@@ -9,6 +9,59 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
+  const handleAddToCart = () => {
+    if (!product || product.stock <= 0) {
+      alert("Sản phẩm đã hết hàng");
+      return;
+    }
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingItem = cart.find(
+      (item) => item.product_id === product.product_id,
+    );
+
+    if (existingItem) {
+      const totalQuantity = existingItem.quantity + quantity;
+
+      if (totalQuantity > Number(product.stock)) {
+        alert(`Chỉ còn ${product.stock} sản phẩm trong kho`);
+        return;
+      }
+
+      existingItem.quantity = totalQuantity;
+    } else {
+      cart.push({
+        product_id: product.product_id,
+        product_name: product.product_name,
+        price: product.price,
+        image_url: product.image_url,
+        stock: product.stock,
+        quantity,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ hàng");
+  };
+
+  const handleQuantityChange = (value) => {
+    const newQuantity = Number(value);
+
+    if (!newQuantity || newQuantity < 1) {
+      setQuantity(1);
+      return;
+    }
+
+    if (newQuantity > product.stock) {
+      alert(`Chỉ còn ${product.stock} sản phẩm trong kho`);
+      setQuantity(product.stock);
+      return;
+    }
+
+    setQuantity(newQuantity);
+  };
+
   useEffect(() => {
     axios
       .get(`http://localhost:5000/api/products/${id}`)
@@ -25,11 +78,17 @@ function ProductDetailPage() {
       <div className="product-detail-container">
         <div className="product-images">
           <div className="main-image">
-            <img src={`http://localhost:5000${product.image_url}`} alt={product.product_name} />
+            <img
+              src={`http://localhost:5000${product.image_url}`}
+              alt={product.product_name}
+            />
           </div>
 
           <div className="thumb-list">
-            <img src={`http://localhost:5000${product.image_url}`} alt={product.product_name} />
+            <img
+              src={`http://localhost:5000${product.image_url}`}
+              alt={product.product_name}
+            />
           </div>
         </div>
 
@@ -77,16 +136,36 @@ function ProductDetailPage() {
           </div>
 
           <div className="quantity-row">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+            <button
+              onClick={() => handleQuantityChange(quantity - 1)}
+              disabled={quantity <= 1}
+            >
               -
             </button>
-            <input value={quantity} readOnly />
-            <button onClick={() => setQuantity(quantity + 1)}>+</button>
+
+            <input
+              type="number"
+              min="1"
+              max={product.stock}
+              value={quantity}
+              onChange={(e) => handleQuantityChange(e.target.value)}
+            />
+
+            <button
+              onClick={() => handleQuantityChange(quantity + 1)}
+              disabled={quantity >= Number(product.stock)}
+            >
+              +
+            </button>
           </div>
+
+          <p className="stock-note">Còn lại: {product.stock} sản phẩm</p>
 
           <div className="action-buttons">
             <button className="buy-now">Mua ngay</button>
-            <button className="add-cart">Thêm vào giỏ hàng</button>
+            <button className="add-cart" onClick={handleAddToCart}>
+              Thêm vào giỏ hàng
+            </button>
           </div>
 
           <div className="support-box">
@@ -115,7 +194,10 @@ function ProductDetailPage() {
             hiệu suất ổn định trong quá trình thi đấu.
           </p>
 
-          <img src={`http://localhost:5000${product.image_url}`} alt={product.product_name} />
+          <img
+            src={`http://localhost:5000${product.image_url}`}
+            alt={product.product_name}
+          />
         </div>
       </div>
     </div>

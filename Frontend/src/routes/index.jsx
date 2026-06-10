@@ -2,7 +2,8 @@ import HomePage from "../pages/homePage";
 import LoginPage from "../pages/loginPage";
 import RegisterPage from "../pages/registerPage";
 import ProductPage from "../pages/productPage";
-import productDetailPage from "../pages/productDetailPage";
+import ProductDetailPage from "../pages/productDetailPage";
+import CartPage from "../pages/cartPage";
 
 export const ROUTERS = {
   USER: {
@@ -12,6 +13,7 @@ export const ROUTERS = {
     PRODUCT: "/products",
     PRODUCT_DETAIL: "/products/:id",
     CATEGORY: "/category/:slug",
+    CART: "/cart",
   },
 };
 
@@ -38,6 +40,10 @@ export const userRoutes = [
   },
   {
     path: ROUTERS.USER.PRODUCT_DETAIL,
-    component: productDetailPage,
-  }
+    component: ProductDetailPage,
+  },
+  {
+    path: ROUTERS.USER.CART,
+    component: CartPage,
+  },
 ];

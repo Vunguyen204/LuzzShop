@@ -2,6 +2,42 @@ import { Link } from "react-router-dom";
 import "./style.scss";
 
 function ProductCard({ product }) {
+  const handleAddToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const stock = Number(product.stock);
+
+    const existingItem = cart.find(
+      (item) => item.product_id === product.product_id
+    );
+
+    if (existingItem) {
+      if (existingItem.quantity >= stock) {
+        alert("Số lượng trong giỏ đã đạt tối đa tồn kho");
+        return;
+      }
+
+      existingItem.quantity += 1;
+    } else {
+      if (stock <= 0) {
+        alert("Sản phẩm đã hết hàng");
+        return;
+      }
+
+      cart.push({
+        product_id: product.product_id,
+        product_name: product.product_name,
+        price: product.price,
+        image_url: product.image_url,
+        stock: product.stock,
+        quantity: 1,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ hàng");
+  };
+
   return (
     <div className="product-card">
       <Link to={`/products/${product.product_id}`}>
@@ -10,10 +46,6 @@ function ProductCard({ product }) {
             src={`http://localhost:5000${product.image_url}`}
             alt={product.product_name}
           />
-
-          {/* <span className="sale-tag">
-            NEW
-          </span> */}
         </div>
 
         <div className="product-card__content">
@@ -33,8 +65,12 @@ function ProductCard({ product }) {
         </div>
       </Link>
 
-      <button className="add-cart-btn">
-        Thêm vào giỏ hàng
+      <button
+        className="add-cart-btn"
+        onClick={handleAddToCart}
+        disabled={Number(product.stock) <= 0}
+      >
+        {Number(product.stock) <= 0 ? "Hết hàng" : "Thêm vào giỏ hàng"}
       </button>
     </div>
   );
