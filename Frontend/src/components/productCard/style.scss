@@ -68,6 +68,7 @@
 
   .price-box {
     margin-top: 10px;
+    min-height: 50px;
 
     .current-price {
       color: var(--primary-color);
@@ -80,6 +81,12 @@
       color: #999;
       text-decoration: line-through;
       font-size: 14px;
+      display: block;
+      height: 20px;
+
+      &.hidden {
+        visibility: hidden;
+      }
     }
   }
 

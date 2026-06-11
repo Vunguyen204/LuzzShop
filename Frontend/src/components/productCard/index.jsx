@@ -8,7 +8,7 @@ function ProductCard({ product }) {
     const stock = Number(product.stock);
 
     const existingItem = cart.find(
-      (item) => item.product_id === product.product_id
+      (item) => item.product_id === product.product_id,
     );
 
     if (existingItem) {
@@ -58,7 +58,10 @@ function ProductCard({ product }) {
 
             {product.old_price && (
               <span className="old-price">
-                {Number(product.old_price).toLocaleString()}đ
+                {/* {Number(product.old_price).toLocaleString()}đ */}
+                {product.old_price
+                  ? `${Number(product.old_price).toLocaleString()}đ`
+                  : "0"}
               </span>
             )}
           </div>
