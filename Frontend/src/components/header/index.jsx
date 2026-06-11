@@ -1,15 +1,26 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ROUTERS } from "../../routes";
 
+const getCartCount = () => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  return cart.reduce((sum, item) => sum + Number(item.quantity), 0);
+};
 const Header = () => {
   const [user, setUser] = useState(null);
   const [menus, setMenus] = useState([]);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const userMenuRef = useRef(null);
+
+  const [cartCount, setCartCount] = useState(getCartCount);
+
+  const updateCartCount = useCallback(() => {
+    setCartCount(getCartCount());
+  }, []);
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -53,6 +64,30 @@ const Header = () => {
     }
   }, []);
 
+  useEffect(() => {
+    window.addEventListener("cartUpdated", updateCartCount);
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, [updateCartCount]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <header className="header">
       <div className="header-top">
@@ -66,7 +101,10 @@ const Header = () => {
 
       <div className="header-main">
         <div className="header-main__logo">
-          <Link to="/">LuzzerShop</Link>
+          {/* <Link to="/">LuzzShop</Link> */}
+          <Link to="/">
+            <img src="/images/logo.svg" alt="Logo" />
+          </Link>
         </div>
 
         <nav className="header-main__menu">
@@ -113,7 +151,7 @@ const Header = () => {
 
           {user ? (
             <>
-              <div className="user-dropdown">
+              <div className="user-dropdown" ref={userMenuRef}>
                 <button
                   className="icon-btn user-icon"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -123,10 +161,16 @@ const Header = () => {
 
                 {isUserMenuOpen && (
                   <div className="user-dropdown__menu">
-                    <Link to="/profile">Trang cá nhân</Link>
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Trang cá nhân
+                    </Link>
 
                     <button
                       onClick={() => {
+                        setIsUserMenuOpen(false);
                         localStorage.removeItem("token");
                         localStorage.removeItem("user");
                         window.location.href = "/";
@@ -142,8 +186,12 @@ const Header = () => {
                 <i className="fa fa-heart"></i>
               </Link>
 
-              <Link to="/cart" className="icon-btn">
+              <Link to="/cart" className="icon-btn cart-icon">
                 <i className="fa fa-shopping-cart"></i>
+
+                {cartCount > 0 && (
+                  <span className="cart-badge">{cartCount}</span>
+                )}
               </Link>
             </>
           ) : (

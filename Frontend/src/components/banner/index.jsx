@@ -18,7 +18,7 @@ function Banner() {
           dành cho người mới bắt đầu và vận động viên chuyên nghiệp.
         </p>
 
-        <button><Link to="/products">Mua ngay</Link></button>
+        <Link to="/products" className="buttonBuyNow">Mua ngay</Link>
       </div>
 
       <div className="hero-banner__image">

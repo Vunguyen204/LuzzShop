@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb";
+import Toast from "../../components/toast";
 import "./style.scss";
 
 function CartPage() {
   const [cartItems, setCartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
   });
+
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const updateQuantity = (productId, quantity) => {
     const item = cartItems.find((item) => item.product_id === productId);
@@ -17,7 +28,7 @@ function CartPage() {
     const stock = Number(item.stock || 0);
 
     if (!stock) {
-      alert("Sản phẩm chưa có thông tin tồn kho");
+      showToast("Sản phẩm chưa có thông tin tồn kho", "error");
       return;
     }
 
@@ -26,7 +37,7 @@ function CartPage() {
     }
 
     if (newQuantity > stock) {
-      alert(`Chỉ còn ${stock} sản phẩm trong kho`);
+      showToast(`Chỉ còn ${stock} sản phẩm trong kho`, "warning");
       return;
     }
 
@@ -36,6 +47,7 @@ function CartPage() {
 
     setCartItems(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const removeItem = (productId) => {
@@ -43,6 +55,8 @@ function CartPage() {
 
     setCartItems(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
+    showToast("Đã xóa sản phẩm khỏi giỏ hàng", "success");
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const totalAmount = cartItems.reduce(
@@ -52,6 +66,14 @@ function CartPage() {
 
   return (
     <div className="cart-page">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       <Breadcrumb />
 
       <div className="cart-container">
@@ -60,9 +82,9 @@ function CartPage() {
         {cartItems.length === 0 ? (
           <div className="empty-cart">
             <p>Giỏ hàng đang trống.</p>
-            <button className="continue-btn">
-              <Link to="/products">Tiếp tục mua hàng</Link>
-            </button>
+            <Link to="/products" className="continue-btn">
+              Tiếp tục mua hàng
+            </Link>
           </div>
         ) : (
           <>
@@ -81,7 +103,10 @@ function CartPage() {
                 {cartItems.map((item) => (
                   <tr key={item.product_id}>
                     <td className="product-info">
-                      <img src={`http://localhost:5000${item  .image_url}`} alt={item.product_name} />
+                      <img
+                        src={`http://localhost:5000${item.image_url}`}
+                        alt={item.product_name}
+                      />
                       <span>
                         <Link to={`/products/${item.product_id}`}>
                           {item.product_name}

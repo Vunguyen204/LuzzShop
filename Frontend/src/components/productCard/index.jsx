@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import "./style.scss";
 
-function ProductCard({ product }) {
+function ProductCard({ product, showToast }) {
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     const stock = Number(product.stock);
 
     const existingItem = cart.find(
@@ -13,14 +12,14 @@ function ProductCard({ product }) {
 
     if (existingItem) {
       if (existingItem.quantity >= stock) {
-        alert("Số lượng trong giỏ đã đạt tối đa tồn kho");
+        showToast("Số lượng trong giỏ đã đạt tối đa tồn kho", "warning");
         return;
       }
 
       existingItem.quantity += 1;
     } else {
       if (stock <= 0) {
-        alert("Sản phẩm đã hết hàng");
+        showToast("Sản phẩm đã hết hàng", "error");
         return;
       }
 
@@ -35,7 +34,8 @@ function ProductCard({ product }) {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng");
+    showToast("Đã thêm vào giỏ hàng", "success");
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   return (
@@ -58,10 +58,7 @@ function ProductCard({ product }) {
 
             {product.old_price && (
               <span className="old-price">
-                {/* {Number(product.old_price).toLocaleString()}đ */}
-                {product.old_price
-                  ? `${Number(product.old_price).toLocaleString()}đ`
-                  : "0"}
+                {Number(product.old_price).toLocaleString()}đ
               </span>
             )}
           </div>

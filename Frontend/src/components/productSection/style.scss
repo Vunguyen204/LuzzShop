@@ -1,5 +1,11 @@
 .product-section {
-  padding: 60px;
+  padding: 0 60px;
+
+  .container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
 
   .section-title {
     display: flex;
@@ -22,6 +28,8 @@
   .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    // grid-template-columns: repeat(4, 320px);
+    // justify-content: center;
     gap: 25px;
   }
 }

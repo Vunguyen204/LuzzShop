@@ -145,21 +145,19 @@
     }
 
     .continue-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         background: var(--primary-color);
         color: #fff;
         border-radius: 6px;
         border: none;
         padding: 12px 24px;
         cursor: pointer;
+        text-decoration: none;
 
         &:hover {
             background: var(--primary-dark);
         }
-
-        a {
-            color: #fff;
-            text-decoration: none;
-        }
-
     }
 }

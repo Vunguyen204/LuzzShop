@@ -53,8 +53,7 @@ exports.register = async (req, res) => {
 exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  const sql =
-    "SELECT * FROM users WHERE email = ?";
+  const sql = "SELECT * FROM users WHERE email = ?";
 
   db.query(sql, [email], async (err, result) => {
     if (result.length === 0) {
@@ -65,11 +64,7 @@ exports.login = (req, res) => {
 
     const user = result[0];
 
-    const isMatch =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -85,15 +80,19 @@ exports.login = (req, res) => {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      }
+      },
     );
 
     res.json({
+      message: "Đăng nhập thành công",
       token,
       user: {
         user_id: user.user_id,
         full_name: user.full_name,
         email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role_id: user.role_id,
       },
     });
   });

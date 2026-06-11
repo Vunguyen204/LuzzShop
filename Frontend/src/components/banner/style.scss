@@ -33,7 +33,7 @@
       margin-bottom: 30px;
     }
 
-    button {
+    .buttonBuyNow {
       background: var(--primary-color);
       color: white;
       border: none;
@@ -42,10 +42,7 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: 600;
-      a{
-        color: white;
-        text-decoration: none;
-      }
+      text-decoration: none;
     }
   }
 

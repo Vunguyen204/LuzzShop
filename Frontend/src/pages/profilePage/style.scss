@@ -1,0 +1,106 @@
+.profile-page {
+  padding: 24px 0 80px;
+  background: #fff;
+
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--primary-dark);
+  }
+
+  .hello {
+    font-style: italic;
+    margin-bottom: 26px;
+
+    span {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+  }
+
+  .profile-content {
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    gap: 25px;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 18px;
+  }
+
+  .customer-info {
+    p {
+      margin-bottom: 22px;
+      font-size: 15px;
+
+      i {
+        color: var(--primary-color);
+        margin-right: 4px;
+      }
+    }
+
+    button {
+      width: 100%;
+      height: 52px;
+      border: none;
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+
+      &:hover {
+        background: var(--primary-dark);
+      }
+    }
+  }
+
+  .order-info {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #eee;
+
+      thead {
+        background: var(--primary-color);
+
+        th {
+          color: #fff;
+          padding: 13px;
+          font-size: 15px;
+          border-right: 1px solid rgba(255, 255, 255, 0.4);
+        }
+      }
+
+      tbody {
+        td {
+          padding: 22px;
+          text-align: center;
+          border-top: 1px solid #eee;
+        }
+
+        .empty-order {
+          height: 78px;
+          color: #111;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    .profile-content {
+      grid-template-columns: 1fr;
+    }
+  }
+}

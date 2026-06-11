@@ -4,6 +4,8 @@ import RegisterPage from "../pages/registerPage";
 import ProductPage from "../pages/productPage";
 import ProductDetailPage from "../pages/productDetailPage";
 import CartPage from "../pages/cartPage";
+import CheckOutPage from "../pages/checkOutPage";
+import ProfilePage from "../pages/profilePage";
 
 export const ROUTERS = {
   USER: {
@@ -14,6 +16,8 @@ export const ROUTERS = {
     PRODUCT_DETAIL: "/products/:id",
     CATEGORY: "/category/:slug",
     CART: "/cart",
+    CHECKOUT: "/checkout",
+    PROFILE: "/profile",
   },
 };
 
@@ -45,5 +49,13 @@ export const userRoutes = [
   {
     path: ROUTERS.USER.CART,
     component: CartPage,
+  },
+  {
+    path: ROUTERS.USER.CHECKOUT,
+    component: CheckOutPage,
+  },
+  {
+    path: ROUTERS.USER.PROFILE,
+    component: ProfilePage,
   },
 ];

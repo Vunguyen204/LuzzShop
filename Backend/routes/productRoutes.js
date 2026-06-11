@@ -126,7 +126,40 @@ router.get("/category/:slug", (req, res) => {
 router.get("/:id", (req, res) => {
   const productId = req.params.id;
 
-  const sql = "SELECT * FROM products WHERE product_id = ?";
+  const sql = `
+    SELECT
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.stock,
+
+      CONCAT(
+        '/uploads/products/',
+        b.slug,
+        '/',
+        p.image_url
+      ) AS image_url,
+
+      c.category_name,
+      c.slug AS category_slug,
+
+      b.brand_name,
+      b.slug AS brand_slug
+
+    FROM products p
+    LEFT JOIN categories c
+      ON p.category_id = c.category_id
+    LEFT JOIN brands b
+      ON p.brand_id = b.brand_id
+
+    WHERE p.product_id = ?
+  `;
 
   db.query(sql, [productId], (err, results) => {
     if (err) {

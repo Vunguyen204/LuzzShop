@@ -3,9 +3,19 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ProductCard from "../../components/ProductCard";
 import Breadcrumb from "../../components/Breadcrumb";
+import Toast from "../../components/Toast";
 import "./style.scss";
 
 function ProductPage() {
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const { slug } = useParams();
@@ -128,10 +138,16 @@ function ProductPage() {
 
   return (
     <>
-
       <div className="product-page">
         <Breadcrumb />
 
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
         <div className="product-layout">
           <aside className="filter-sidebar">
             <div className="filter-box">
@@ -364,7 +380,11 @@ function ProductPage() {
             <div className="product-list">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
-                  <ProductCard key={product.product_id} product={product} />
+                  <ProductCard
+                    key={product.product_id}
+                    product={product}
+                    showToast={showToast}
+                  />
                 ))
               ) : (
                 <p>Không có sản phẩm phù hợp.</p>
@@ -373,7 +393,6 @@ function ProductPage() {
           </main>
         </div>
       </div>
-
     </>
   );
 }
