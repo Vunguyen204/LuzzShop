@@ -3,6 +3,7 @@ import "./style.scss";
 
 const breadcrumbMap = {
   products: "Sản phẩm",
+  saleoff: "Sale off",
   category: "Danh mục",
 
   "vot-pickleball": "Vợt Pickleball",

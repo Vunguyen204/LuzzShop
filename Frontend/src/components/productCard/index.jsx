@@ -27,6 +27,7 @@ function ProductCard({ product, showToast }) {
         product_id: product.product_id,
         product_name: product.product_name,
         price: product.price,
+        old_price: product.old_price,
         image_url: product.image_url,
         stock: product.stock,
         quantity: 1,
@@ -38,10 +39,25 @@ function ProductCard({ product, showToast }) {
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
+  const isSale =
+    product.old_price && Number(product.old_price) > Number(product.price);
+
   return (
     <div className="product-card">
       <Link to={`/products/${product.product_id}`}>
         <div className="product-card__image">
+          {isSale && (
+            <div className="sale-badge">
+              Giảm{" "}
+              {Math.round(
+                ((Number(product.old_price) - Number(product.price)) /
+                  Number(product.old_price)) *
+                  100,
+              )}
+              %
+            </div>
+          )}
+          
           <img
             src={`http://localhost:5000${product.image_url}`}
             alt={product.product_name}
@@ -52,15 +68,13 @@ function ProductCard({ product, showToast }) {
           <h3>{product.product_name}</h3>
 
           <div className="price-box">
-            <span className="current-price">
+            <span className={isSale ? "sale-price" : "current-price"}>
               {Number(product.price).toLocaleString()}đ
             </span>
 
-            {product.old_price && (
-              <span className="old-price">
-                {Number(product.old_price).toLocaleString()}đ
-              </span>
-            )}
+            <span className={isSale ? "old-price" : "old-price hidden"}>
+              {isSale ? `${Number(product.old_price).toLocaleString()}đ` : "0đ"}
+            </span>
           </div>
         </div>
       </Link>

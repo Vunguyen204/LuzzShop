@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { register } from "../../api/authApi";
+import Toast from "../../components/Toast";
 import "../auth.scss";
 
 function RegisterPage() {
@@ -11,6 +12,15 @@ function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
+
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -23,7 +33,7 @@ function RegisterPage() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Mật khẩu nhập lại không khớp");
+      showToast("Mật khẩu nhập lại không khớp", "error");
       return;
     }
 
@@ -35,14 +45,21 @@ function RegisterPage() {
         password: formData.password,
       });
 
-      alert(res.data.message);
+      showToast(res.data.message, "success");
     } catch (error) {
-      alert(error.response?.data?.message || "Đăng ký thất bại");
+      showToast(error.response?.data?.message || "Đăng ký thất bại", "error");
     }
   };
 
   return (
     <div className="auth-page">
+      {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       <form className="auth-box" onSubmit={handleSubmit}>
         <h2>Đăng ký</h2>
         <div className="auth-line"></div>
@@ -51,11 +68,34 @@ function RegisterPage() {
           Đã có tài khoản, đăng nhập <Link to="/login">tại đây</Link>
         </p>
 
-        <input name="full_name" placeholder="Nhập tên của bạn (*)" onChange={handleChange} />
-        <input name="email" type="email" placeholder="Nhập email của bạn (*)" onChange={handleChange} />
-        <input name="phone" placeholder="Số điện thoại" onChange={handleChange} />
-        <input name="password" type="password" placeholder="Mật khẩu" onChange={handleChange} />
-        <input name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" onChange={handleChange} />
+        <input
+          name="full_name"
+          placeholder="Nhập tên của bạn (*)"
+          onChange={handleChange}
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Nhập email của bạn (*)"
+          onChange={handleChange}
+        />
+        <input
+          name="phone"
+          placeholder="Số điện thoại"
+          onChange={handleChange}
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Mật khẩu"
+          onChange={handleChange}
+        />
+        <input
+          name="confirmPassword"
+          type="password"
+          placeholder="Nhập lại mật khẩu"
+          onChange={handleChange}
+        />
 
         <button type="submit">Đăng ký</button>
       </form>

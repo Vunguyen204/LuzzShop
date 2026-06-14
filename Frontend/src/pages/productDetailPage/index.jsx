@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Breadcrumb from "../../components/Breadcrumb";
+import Toast from "../../components/Toast";
 import "./style.scss";
 
 function ProductDetailPage() {
@@ -9,9 +10,18 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
+
   const handleAddToCart = () => {
     if (!product || product.stock <= 0) {
-      alert("Sản phẩm đã hết hàng");
+      showToast("Sản phẩm đã hết hàng", "error");
       return;
     }
 
@@ -25,7 +35,7 @@ function ProductDetailPage() {
       const totalQuantity = existingItem.quantity + quantity;
 
       if (totalQuantity > Number(product.stock)) {
-        alert(`Chỉ còn ${product.stock} sản phẩm trong kho`);
+        showToast(`Chỉ còn ${product.stock} sản phẩm trong kho`, "error");
         return;
       }
 
@@ -42,7 +52,8 @@ function ProductDetailPage() {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng");
+    showToast("Đã thêm vào giỏ hàng", "success");
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const handleQuantityChange = (value) => {
@@ -54,7 +65,7 @@ function ProductDetailPage() {
     }
 
     if (newQuantity > product.stock) {
-      alert(`Chỉ còn ${product.stock} sản phẩm trong kho`);
+      showToast(`Chỉ còn ${product.stock} sản phẩm trong kho`, "error");
       setQuantity(product.stock);
       return;
     }
@@ -74,6 +85,13 @@ function ProductDetailPage() {
   return (
     <div className="product-detail-page">
       <Breadcrumb productName={product.product_name} />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="product-detail-container">
         <div className="product-images">

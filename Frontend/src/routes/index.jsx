@@ -2,6 +2,7 @@ import HomePage from "../pages/homePage";
 import LoginPage from "../pages/loginPage";
 import RegisterPage from "../pages/registerPage";
 import ProductPage from "../pages/productPage";
+import SaleOffPage from "../pages/saleOffPage";
 import ProductDetailPage from "../pages/productDetailPage";
 import CartPage from "../pages/cartPage";
 import CheckOutPage from "../pages/checkOutPage";
@@ -13,6 +14,7 @@ export const ROUTERS = {
     LOGIN: "/login",
     REGISTER: "/register",
     PRODUCT: "/products",
+    SALE_OFF: "/saleoff",
     PRODUCT_DETAIL: "/products/:id",
     CATEGORY: "/category/:slug",
     CART: "/cart",
@@ -37,6 +39,10 @@ export const userRoutes = [
   {
     path: ROUTERS.USER.PRODUCT,
     component: ProductPage,
+  },
+  {
+    path: ROUTERS.USER.SALE_OFF,
+    component: SaleOffPage,
   },
   {
     path: ROUTERS.USER.CATEGORY,

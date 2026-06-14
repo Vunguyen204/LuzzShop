@@ -2,11 +2,20 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb";
+import Toast from "../../components/Toast";
 import "./style.scss";
 
 function CheckoutPage() {
   const navigate = useNavigate();
   const [useDefaultInfo, setUseDefaultInfo] = useState(true);
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const [cartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
@@ -38,7 +47,12 @@ function CheckoutPage() {
     e.preventDefault();
 
     if (cartItems.length === 0) {
-      alert("Giỏ hàng đang trống");
+      showToast("Giỏ hàng đang trống", "error");
+      return;
+    }
+
+    if (!formData.full_name || !formData.phone || !formData.address) {
+      showToast("Vui lòng nhập đầy đủ thông tin giao hàng", "error");
       return;
     }
 
@@ -56,18 +70,28 @@ function CheckoutPage() {
       });
 
       localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
 
-      alert(res.data.message);
+      showToast(res.data.message, "success");
 
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 1200);
     } catch (error) {
-      alert(error.response?.data?.message || "Đặt hàng thất bại");
+      showToast(error.response?.data?.message || "Đặt hàng thất bại", "error");
     }
   };
 
   return (
     <div className="checkout-page">
       <Breadcrumb />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="checkout-container">
         <form className="checkout-form" onSubmit={handleOrder}>

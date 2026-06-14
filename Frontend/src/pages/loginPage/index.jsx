@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/authApi";
+import Toast from "../../components/Toast";
 import "../auth.scss";
 
 function LoginPage() {
@@ -10,6 +11,15 @@ function LoginPage() {
     email: "",
     password: "",
   });
+  
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -27,16 +37,26 @@ function LoginPage() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      alert("Đăng nhập thành công");
-      navigate("/");
-      window.location.reload();
+      showToast("Đăng nhập thành công", "success");
+
+      setTimeout(() => {
+        navigate("/");
+        window.location.reload();
+      }, 1000);
     } catch (error) {
-      alert(error.response?.data?.message || "Đăng nhập thất bại");
+      showToast(error.response?.data?.message || "Đăng nhập thất bại", "error");
     }
   };
 
   return (
     <div className="auth-page">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <form className="auth-box" onSubmit={handleSubmit}>
         <h2>Đăng nhập</h2>
         <div className="auth-line"></div>
@@ -45,8 +65,18 @@ function LoginPage() {
           Chưa có tài khoản, đăng ký <Link to="/register">tại đây</Link>
         </p>
 
-        <input name="email" type="email" placeholder="Nhập email của bạn (*)" onChange={handleChange} />
-        <input name="password" type="password" placeholder="Mật khẩu" onChange={handleChange} />
+        <input
+          name="email"
+          type="email"
+          placeholder="Nhập email của bạn (*)"
+          onChange={handleChange}
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Mật khẩu"
+          onChange={handleChange}
+        />
 
         <button type="submit">Đăng nhập</button>
       </form>
