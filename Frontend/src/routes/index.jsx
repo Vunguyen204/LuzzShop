@@ -8,18 +8,31 @@ import CartPage from "../pages/cartPage";
 import CheckOutPage from "../pages/checkOutPage";
 import ProfilePage from "../pages/profilePage";
 
+import DashBoardPage from "../pages/dashBoardPage";
+import AdminMenuPage from "../pages/adminMenuPage";
+
 export const ROUTERS = {
   USER: {
     HOME: "/",
     LOGIN: "/login",
     REGISTER: "/register",
     PRODUCT: "/products",
-    SALE_OFF: "/saleoff",
+    SALEOFF: "/saleoff",
     PRODUCT_DETAIL: "/products/:id",
     CATEGORY: "/category/:slug",
     CART: "/cart",
     CHECKOUT: "/checkout",
     PROFILE: "/profile",
+  },
+  ADMIN: {
+    DASHBOARD: "",
+    MENU: "menus",
+    CATEGORY: "categories",
+    BRAND: "brands",
+    PRODUCT: "products",
+    ORDER: "orders",
+    USER: "users",
+    ROLE: "roles",
   },
 };
 
@@ -41,7 +54,7 @@ export const userRoutes = [
     component: ProductPage,
   },
   {
-    path: ROUTERS.USER.SALE_OFF,
+    path: ROUTERS.USER.SALEOFF,
     component: SaleOffPage,
   },
   {
@@ -63,5 +76,32 @@ export const userRoutes = [
   {
     path: ROUTERS.USER.PROFILE,
     component: ProfilePage,
+  },
+];
+
+export const adminRoutes = [
+  {
+    path: ROUTERS.ADMIN.DASHBOARD,
+    component: DashBoardPage,
+  },
+  {
+    path: ROUTERS.ADMIN.MENU,
+    component: AdminMenuPage,
+  },
+  {
+    path: ROUTERS.ADMIN.CATEGORY,
+    component: DashBoardPage,
+  },
+  {
+    path: ROUTERS.ADMIN.BRAND,
+    component: DashBoardPage,
+  },
+  {
+    path: ROUTERS.ADMIN.PRODUCT,
+    component: DashBoardPage,
+  },
+  {
+    path: ROUTERS.ADMIN.ORDER,
+    component: DashBoardPage,
   },
 ];

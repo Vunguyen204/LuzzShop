@@ -25,7 +25,7 @@ const Header = () => {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/menus");
+        const res = await axios.get("http://localhost:5000/api/menus/active");
         setMenus(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy menu:", error);
