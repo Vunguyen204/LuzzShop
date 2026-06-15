@@ -49,4 +49,29 @@ router.get("/recent-orders", (req, res) => {
   });
 });
 
+router.get("/revenue-by-month", (req, res) => {
+  const sql = `
+    SELECT
+      MONTH(order_date) AS month,
+      YEAR(order_date) AS year,
+      SUM(total_amount) AS revenue,
+      COUNT(order_id) AS totalOrders
+    FROM orders
+    WHERE status = 'Completed'
+    GROUP BY YEAR(order_date), MONTH(order_date)
+    ORDER BY year, month
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi lấy doanh thu theo tháng",
+        error: err,
+      });
+    }
+
+    res.json(results);
+  });
+});
+
 module.exports = router;

@@ -2,29 +2,28 @@ import { memo, useEffect, useState } from "react";
 import axios from "axios";
 import "./style.scss";
 
-const AdminMenuPage = () => {
-  const [menus, setMenus] = useState([]);
+const AdminBrandPage = () => {
+  const [brands, setBrands] = useState([]);
   const [isShowForm, setIsShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    menu_name: "",
+    brand_name: "",
     slug: "",
-    ordering: "",
     status: 1,
   });
   const [editingId, setEditingId] = useState(null);
 
-  const fetchMenus = async () => {
+  const fetchbrands = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/menus");
-      setMenus(res.data);
+      const res = await axios.get("http://localhost:5000/api/brands");
+      setBrands(res.data);
     } catch (error) {
-      console.log("Lỗi lấy menu:", error);
+      console.log("Lỗi lấy thương hiệu:", error);
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchMenus();
+      fetchbrands();
     }, 0);
 
     return () => clearTimeout(timer);
@@ -32,9 +31,8 @@ const AdminMenuPage = () => {
 
   const resetForm = () => {
     setFormData({
-      menu_name: "",
+      brand_name: "",
       slug: "",
-      ordering: "",
       status: 1,
     });
     setEditingId(null);
@@ -42,22 +40,14 @@ const AdminMenuPage = () => {
   };
 
   const handleShowAddForm = () => {
-    setFormData({
-      menu_name: "",
-      slug: "",
-      ordering: "",
-      status: 1,
-    });
-    setEditingId(null);
+    resetForm();
     setIsShowForm(true);
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
     setFormData({
       ...formData,
-      [name]: name === "ordering" || name === "status" ? Number(value) : value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -67,59 +57,58 @@ const AdminMenuPage = () => {
     try {
       if (editingId) {
         await axios.put(
-          `http://localhost:5000/api/menus/${editingId}`,
+          `http://localhost:5000/api/brands/${editingId}`,
           formData,
         );
-        alert("Cập nhật menu thành công");
+        alert("Cập nhật thương hiệu thành công");
       } else {
-        await axios.post("http://localhost:5000/api/menus", formData);
-        alert("Thêm menu thành công");
+        await axios.post("http://localhost:5000/api/brands", formData);
+        alert("Thêm thương hiệu thành công");
       }
 
       resetForm();
-      fetchMenus();
+      fetchbrands();
     } catch (error) {
-      console.log("Lỗi lưu menu:", error);
-      alert("Lưu menu thất bại");
+      console.log("Lỗi lưu thương hiệu:", error);
+      alert("Lưu thương hiệu thất bại");
     }
   };
 
-  const handleEdit = (menu) => {
-    setEditingId(menu.menu_id);
+  const handleEdit = (brand) => {
+    setEditingId(brand.brand_id);
     setIsShowForm(true);
 
     setFormData({
-      menu_name: menu.menu_name,
-      slug: menu.slug,
-      ordering: menu.ordering,
-      status: menu.status,
+      brand_name: brand.brand_name,
+      slug: brand.slug,
+      status: brand.status,
     });
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa menu này không?")) return;
+    if (!window.confirm("Bạn có chắc muốn xóa thương hiệu này không?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/menus/${id}`);
-      alert("Xóa menu thành công");
-      fetchMenus();
+      await axios.delete(`http://localhost:5000/api/brands/${id}`);
+      alert("Xóa thương hiệu thành công");
+      fetchbrands();
     } catch (error) {
-      console.log("Lỗi xóa menu:", error);
-      alert("Xóa menu thất bại");
+      console.log("Lỗi xóa thương hiệu:", error);
+      alert("Xóa thương hiệu thất bại");
     }
   };
 
   return (
-    <div className="admin-menu-page">
-      <div className="admin-menu-page__header">
-        <h2>Quản lý Menu</h2>
+    <div className="admin-brand-page">
+      <div className="admin-brand-page__header">
+        <h2>Quản lý thương hiệu</h2>
 
         {!isShowForm && (
           <button
-            className="admin-menu-page__btn-add"
+            className="admin-brand-page__btn-add"
             onClick={handleShowAddForm}
           >
-            Thêm menu
+            Thêm thương hiệu
           </button>
         )}
       </div>
@@ -128,7 +117,7 @@ const AdminMenuPage = () => {
         <div className="admin-modal">
           <div className="admin-modal__content">
             <div className="admin-modal__header">
-              <h3>{editingId ? "Cập nhật Menu" : "Thêm Menu"}</h3>
+              <h3>{editingId ? "Cập nhật thương hiệu" : "Thêm thương hiệu"}</h3>
 
               <button
                 className="admin-modal__close"
@@ -141,11 +130,11 @@ const AdminMenuPage = () => {
 
             <form className="admin-form" onSubmit={handleSubmit}>
               <div className="admin-form__row">
-                <label>Tên menu</label>
+                <label>Tên thương hiệu</label>
                 <input
                   type="text"
-                  name="menu_name"
-                  value={formData.menu_name}
+                  name="brand_name"
+                  value={formData.brand_name}
                   onChange={handleChange}
                   required
                 />
@@ -157,17 +146,6 @@ const AdminMenuPage = () => {
                   type="text"
                   name="slug"
                   value={formData.slug}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="admin-form__row">
-                <label>Thứ tự</label>
-                <input
-                  type="number"
-                  name="ordering"
-                  value={formData.ordering}
                   onChange={handleChange}
                   required
                 />
@@ -186,13 +164,13 @@ const AdminMenuPage = () => {
               </div>
 
               <div className="admin-form__actions">
-                <button className="admin-menu-page__btn-add" type="submit">
-                  {editingId ? "Cập nhật" : "Lưu menu"}
+                <button className="admin-brand-page__btn-add" type="submit">
+                  {editingId ? "Cập nhật" : "Lưu thương hiệu"}
                 </button>
 
                 <button
                   type="button"
-                  className="admin-menu-page__btn-cancel"
+                  className="admin-brand-page__btn-cancel"
                   onClick={resetForm}
                 >
                   Hủy
@@ -205,50 +183,58 @@ const AdminMenuPage = () => {
 
       <div className="admin-stats">
         <div className="admin-stats__card">
-          <h4>Tổng menu</h4>
-          <p>{menus.length}</p>
+          <h4>Tổng thương hiệu</h4>
+          <p>{brands.length}</p>
         </div>
 
         <div className="admin-stats__card">
-          <h4>Đang hiển thị</h4>
-          <p>{menus.filter((m) => Number(m.status) === 1).length}</p>
+          <h4>Thương hiệu đang hiển thị</h4>
+          <p>{brands.filter((b) => Number(b.status) === 1).length}</p>
         </div>
 
         <div className="admin-stats__card">
-          <h4>Đang ẩn</h4>
-          <p>{menus.filter((m) => Number(m.status) === 0).length}</p>
+          <h4>Thương hiệu đang ẩn</h4>
+          <p>{brands.filter((b) => Number(b.status) === 0).length}</p>
         </div>
+
+        {/* <div className="admin-stats__card">
+          <h4>Có sản phẩm</h4>
+          <p>{brands.filter((b) => Number(b.product_count) > 0).length}</p>
+        </div>
+
+        <div className="admin-stats__card">
+          <h4>Chưa sử dụng</h4>
+          <p>{brands.filter((b) => Number(b.product_count) === 0).length}</p>
+        </div> */}
       </div>
 
       <table className="admin-table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Tên menu</th>
+            <th>Tên thương hiệu</th>
             <th>Slug</th>
-            <th>Thứ tự</th>
             <th>Trạng thái</th>
             <th>Thao tác</th>
           </tr>
         </thead>
 
         <tbody>
-          {menus.map((menu) => (
-            <tr key={menu.menu_id}>
-              <td>{menu.menu_id}</td>
-              <td>{menu.menu_name}</td>
-              <td>{menu.slug}</td>
-              <td>{menu.ordering}</td>
+          {brands.map((brand) => (
+            <tr key={brand.brand_id}>
+              <td>{brand.brand_id}</td>
+              <td>{brand.brand_name}</td>
+              <td>{brand.slug}</td>
 
               <td>
                 <span
                   className={`admin-status ${
-                    Number(menu.status) === 1
+                    Number(brand.status) === 1
                       ? "admin-status--active"
                       : "admin-status--inactive"
                   }`}
                 >
-                  {Number(menu.status) === 1 ? "Hiển thị" : "Ẩn"}
+                  {Number(brand.status) === 1 ? "Hiển thị" : "Ẩn"}
                 </span>
               </td>
 
@@ -256,14 +242,14 @@ const AdminMenuPage = () => {
                 <div className="admin-actions">
                   <button
                     className="admin-actions__edit"
-                    onClick={() => handleEdit(menu)}
+                    onClick={() => handleEdit(brand)}
                   >
                     Sửa
                   </button>
 
                   <button
                     className="admin-actions__delete"
-                    onClick={() => handleDelete(menu.menu_id)}
+                    onClick={() => handleDelete(brand.brand_id)}
                   >
                     Xóa
                   </button>
@@ -277,4 +263,4 @@ const AdminMenuPage = () => {
   );
 };
 
-export default memo(AdminMenuPage);
+export default memo(AdminBrandPage);

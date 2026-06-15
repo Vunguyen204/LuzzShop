@@ -64,6 +64,20 @@ router.post("/", (req, res) => {
   );
 });
 
+router.get("/", (req, res) => {
+  const sql = `
+    SELECT *
+    FROM orders
+    ORDER BY order_date DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json(err);
+
+    res.json(results);
+  });
+});
+
 // Lấy đơn hàng theo user
 router.get("/user/:userId", (req, res) => {
   const { userId } = req.params;
@@ -96,4 +110,59 @@ router.get("/user/:userId", (req, res) => {
     res.json(results);
   });
 });
+
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+
+  const orderSql = `
+    SELECT *
+    FROM orders
+    WHERE order_id = ?
+  `;
+
+  const itemSql = `
+    SELECT *
+    FROM order_items
+    WHERE order_id = ?
+  `;
+
+  db.query(orderSql, [id], (err, orderResults) => {
+    if (err) return res.status(500).json(err);
+
+    if (orderResults.length === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy đơn hàng",
+      });
+    }
+
+    db.query(itemSql, [id], (err, itemResults) => {
+      if (err) return res.status(500).json(err);
+
+      res.json({
+        order: orderResults[0],
+        items: itemResults,
+      });
+    });
+  });
+});
+
+router.put("/:id/status", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const sql = `
+    UPDATE orders
+    SET status = ?
+    WHERE order_id = ?
+  `;
+
+  db.query(sql, [status, id], (err) => {
+    if (err) return res.status(500).json(err);
+
+    res.json({
+      message: "Cập nhật trạng thái đơn hàng thành công",
+    });
+  });
+});
+
 module.exports = router;

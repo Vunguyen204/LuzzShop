@@ -8,8 +8,13 @@ import CartPage from "../pages/cartPage";
 import CheckOutPage from "../pages/checkOutPage";
 import ProfilePage from "../pages/profilePage";
 
-import DashBoardPage from "../pages/dashBoardPage";
+import DashBoardPage from "../pages/adminDashBoardPage";
 import AdminMenuPage from "../pages/adminMenuPage";
+import AdminCategoryPage from "../pages/adminCategoryPage";
+import AdminBrandPage from "../pages/adminBrandPage";
+import AdminProductPage from "../pages/adminProductPage";
+import AdminOrderPage from "../pages/adminOrderPage";
+import AdminUserPage from "../pages/adminUserPage";
 
 export const ROUTERS = {
   USER: {
@@ -32,7 +37,6 @@ export const ROUTERS = {
     PRODUCT: "products",
     ORDER: "orders",
     USER: "users",
-    ROLE: "roles",
   },
 };
 
@@ -90,18 +94,22 @@ export const adminRoutes = [
   },
   {
     path: ROUTERS.ADMIN.CATEGORY,
-    component: DashBoardPage,
+    component: AdminCategoryPage,
   },
   {
     path: ROUTERS.ADMIN.BRAND,
-    component: DashBoardPage,
+    component: AdminBrandPage,
   },
   {
     path: ROUTERS.ADMIN.PRODUCT,
-    component: DashBoardPage,
+    component: AdminProductPage,
   },
   {
     path: ROUTERS.ADMIN.ORDER,
-    component: DashBoardPage,
+    component: AdminOrderPage,
+  },
+  {
+    path: ROUTERS.ADMIN.USER,
+    component: AdminUserPage,
   },
 ];

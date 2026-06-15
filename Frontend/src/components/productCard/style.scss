@@ -31,7 +31,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      background: #e60012;
+      background: var(--primary-color);
       color: #fff;
       padding: 7px 13px;
       font-size: 13px;
@@ -45,6 +45,7 @@
       height: 100%;
       object-fit: contain;
       transition: 0.4s;
+      // border-bottom: 1px var(--border-color) solid;
     }
   }
 

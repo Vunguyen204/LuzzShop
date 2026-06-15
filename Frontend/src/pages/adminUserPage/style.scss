@@ -1,0 +1,93 @@
+.admin-user-page {
+  width: 100%;
+
+  &__header {
+    margin-bottom: 24px;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+  }
+
+  &__toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+
+    input,
+    select {
+      flex: 1;
+      min-width: 220px;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+    }
+
+    &__reset {
+      border: none;
+      background: #777;
+      color: #fff;
+      padding: 0 16px;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        background: #666;
+      }
+    }
+  }
+
+  &__btn-add {
+    border: none;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--primary-dark);
+    }
+  }
+
+  &__btn-cancel {
+    border: none;
+    background: #6c757d;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+}
+
+.admin-role-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+
+  &--admin {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  &--user {
+    background: #d4edda;
+    color: #155724;
+  }
+}

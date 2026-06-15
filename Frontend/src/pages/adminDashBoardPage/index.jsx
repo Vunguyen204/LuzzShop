@@ -4,6 +4,7 @@ import "./style.scss";
 
 const DashBoardPage = () => {
   const user = JSON.parse(localStorage.getItem("user"));
+  const [revenueByMonth, setRevenueByMonth] = useState([]);
 
   const [dashboard, setDashboard] = useState({
     totalProducts: 0,
@@ -32,8 +33,33 @@ const DashBoardPage = () => {
       .catch((err) => {
         console.log("Lỗi lấy đơn hàng:", err);
       });
+
+    axios
+      .get("http://localhost:5000/api/dashboard/revenue-by-month")
+      .then((res) => {
+        setRevenueByMonth(res.data);
+      })
+      .catch((err) => {
+        console.log("Lỗi lấy doanh thu theo tháng:", err);
+      });
   }, []);
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case "Pending":
+        return "Chờ xử lý";
+      case "Confirmed":
+        return "Đã xác nhận";
+      case "Shipping":
+        return "Đang giao";
+      case "Completed":
+        return "Đã hoàn thành";
+      case "Cancelled":
+        return "Đã hủy";
+      default:
+        return status;
+    }
+  };
   return (
     <div className="admin-dashboard">
       <div className="admin-dashboard__header">
@@ -90,9 +116,35 @@ const DashBoardPage = () => {
                   <span
                     className={`admin-dashboard__status admin-dashboard__status--${order.status.toLowerCase()}`}
                   >
-                    {order.status}
+                    {getStatusText(order.status)}
                   </span>
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="admin-dashboard__table-box">
+        <h2>Doanh thu theo tháng</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tháng</th>
+              <th>Số đơn hoàn thành</th>
+              <th>Doanh thu</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {revenueByMonth.map((item) => (
+              <tr key={`${item.month}-${item.year}`}>
+                <td>
+                  Tháng {item.month}/{item.year}
+                </td>
+                <td>{item.totalOrders}</td>
+                <td>{Number(item.revenue).toLocaleString()}đ</td>
               </tr>
             ))}
           </tbody>

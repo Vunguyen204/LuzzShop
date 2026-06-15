@@ -40,10 +40,6 @@ const AdminLayout = () => {
             <li>
               <Link to="/admin/users">Quản lý người dùng</Link>
             </li>
-
-            <li>
-              <Link to="/admin/roles">Phân quyền người dùng</Link>
-            </li>
           </ul>
         </div>
         <div className="admin-sidebar__bottom">

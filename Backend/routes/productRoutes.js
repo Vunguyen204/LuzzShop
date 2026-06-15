@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const upload = require("../middleware/uploadProduct");
 
 // Lấy tất cả sản phẩm
 router.get("/", (req, res) => {
@@ -119,6 +120,171 @@ router.get("/category/:slug", (req, res) => {
     }
 
     res.json(results);
+  });
+});
+
+router.post("/", (req, res) => {
+  const {
+    category_id,
+    brand_id,
+    product_name,
+    slug,
+    sku,
+    description,
+    price,
+    old_price,
+    stock,
+    image_url,
+  } = req.body;
+
+  const sql = `
+    INSERT INTO products
+    (
+      category_id,
+      brand_id,
+      product_name,
+      slug,
+      sku,
+      description,
+      price,
+      old_price,
+      stock,
+      image_url
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    sql,
+    [
+      category_id,
+      brand_id,
+      product_name,
+      slug,
+      sku,
+      description,
+      price,
+      old_price || null,
+      stock,
+      image_url,
+    ],
+    (err) => {
+      if (err) {
+        return res.status(500).json({
+          message: "Lỗi thêm sản phẩm",
+          error: err,
+        });
+      }
+
+      res.json({
+        message: "Thêm sản phẩm thành công",
+      });
+    },
+  );
+});
+
+router.post("/upload", upload.single("image"), (req, res) => {
+  const brandSlug = req.body.brand_slug;
+
+  if (!brandSlug) {
+    return res.status(400).json({
+      message: "Thiếu brand_slug",
+    });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({
+      message: "Chưa chọn ảnh",
+    });
+  }
+
+  res.json({
+    image_url: req.file.filename,
+    brand_slug: brandSlug,
+  });
+});
+
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+
+  const {
+    category_id,
+    brand_id,
+    product_name,
+    slug,
+    sku,
+    description,
+    price,
+    old_price,
+    stock,
+    image_url,
+  } = req.body;
+
+  const sql = `
+    UPDATE products
+    SET
+      category_id = ?,
+      brand_id = ?,
+      product_name = ?,
+      slug = ?,
+      sku = ?,
+      description = ?,
+      price = ?,
+      old_price = ?,
+      stock = ?,
+      image_url = ?
+    WHERE product_id = ?
+  `;
+
+  db.query(
+    sql,
+    [
+      category_id,
+      brand_id,
+      product_name,
+      slug,
+      sku,
+      description,
+      price,
+      old_price || null,
+      stock,
+      image_url,
+      id,
+    ],
+    (err) => {
+      if (err) {
+        return res.status(500).json({
+          message: "Lỗi cập nhật sản phẩm",
+          error: err,
+        });
+      }
+
+      res.json({
+        message: "Cập nhật sản phẩm thành công",
+      });
+    },
+  );
+});
+
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+
+  const sql = `
+    DELETE FROM products
+    WHERE product_id = ?
+  `;
+
+  db.query(sql, [id], (err) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi xóa sản phẩm",
+        error: err,
+      });
+    }
+
+    res.json({
+      message: "Xóa sản phẩm thành công",
+    });
   });
 });
 

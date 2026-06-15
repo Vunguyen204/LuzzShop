@@ -1,0 +1,45 @@
+.admin-brand-page {
+    width: 100%;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+    }
+
+    &__btn-add {
+        border: none;
+        background: var(--primary-color);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+
+        &:hover {
+            background: var(--primary-dark);
+        }
+    }
+
+    &__btn-cancel {
+        border: none;
+        background: #6c757d;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover {
+            background: #5a6268;
+        }
+    }
+}

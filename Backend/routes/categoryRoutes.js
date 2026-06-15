@@ -40,4 +40,91 @@ router.get("/:slug", (req, res) => {
   });
 });
 
+router.post("/", (req, res) => {
+  const {
+    category_name,
+    slug,
+    ordering,
+    status,
+  } = req.body;
+
+  const sql = `
+    INSERT INTO categories
+    (
+      category_name,
+      slug,
+      ordering,
+      status
+    )
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(
+    sql,
+    [category_name, slug, ordering, status],
+    (err) => {
+      if (err) return res.status(500).json(err);
+
+      res.json({
+        message: "Thêm danh mục thành công",
+      });
+    }
+  );
+});
+
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+
+  const {
+    category_name,
+    slug,
+    ordering,
+    status,
+  } = req.body;
+
+  const sql = `
+    UPDATE categories
+    SET
+      category_name = ?,
+      slug = ?,
+      ordering = ?,
+      status = ?
+    WHERE category_id = ?
+  `;
+
+  db.query(
+    sql,
+    [
+      category_name,
+      slug,
+      ordering,
+      status,
+      id,
+    ],
+    (err) => {
+      if (err) return res.status(500).json(err);
+
+      res.json({
+        message: "Cập nhật thành công",
+      });
+    }
+  );
+});
+
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+
+  db.query(
+    "DELETE FROM categories WHERE category_id = ?",
+    [id],
+    (err) => {
+      if (err) return res.status(500).json(err);
+
+      res.json({
+        message: "Xóa thành công",
+      });
+    }
+  );
+});
+
 module.exports = router;
