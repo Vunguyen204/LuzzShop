@@ -16,6 +16,9 @@ const breadcrumbMap = {
   profile: "Tài khoản",
   login: "Đăng nhập",
   register: "Đăng ký",
+  news: "Tin tức",
+  aboutus: "Giới thiệu",
+  contactus: "Liên hệ"
 };
 
 function Breadcrumb({ productName }) {

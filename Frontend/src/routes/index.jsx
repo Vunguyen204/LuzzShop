@@ -7,6 +7,9 @@ import ProductDetailPage from "../pages/productDetailPage";
 import CartPage from "../pages/cartPage";
 import CheckOutPage from "../pages/checkOutPage";
 import ProfilePage from "../pages/profilePage";
+import NewsPage from "../pages/newsPage";
+import AboutUsPage from "../pages/aboutUsPage";
+import ContactUsPage from "../pages/contactUsPage";
 
 import DashBoardPage from "../pages/adminDashBoardPage";
 import AdminMenuPage from "../pages/adminMenuPage";
@@ -28,7 +31,11 @@ export const ROUTERS = {
     CART: "/cart",
     CHECKOUT: "/checkout",
     PROFILE: "/profile",
+    NEWS: "/news",
+    ABOUTUS: "/aboutus",
+    CONTACTUS: "/contactus",
   },
+
   ADMIN: {
     DASHBOARD: "",
     MENU: "menus",
@@ -80,6 +87,18 @@ export const userRoutes = [
   {
     path: ROUTERS.USER.PROFILE,
     component: ProfilePage,
+  },
+  {
+    path: ROUTERS.USER.NEWS,
+    component: NewsPage,
+  },
+  {
+    path: ROUTERS.USER.ABOUTUS,
+    component: AboutUsPage,
+  },
+  {
+    path: ROUTERS.USER.CONTACTUS,
+    component: ContactUsPage,
   },
 ];
 

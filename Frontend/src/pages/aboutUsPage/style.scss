@@ -1,0 +1,42 @@
+.about-page {
+  padding: 0 0 90px;
+
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .about-box {
+    width: 860px;
+    max-width: 100%;
+    margin: 20px auto;
+    background: #fff;
+    padding: 34px 22px;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+
+    h2 {
+      text-align: center;
+      font-size: 34px;
+      color: var(--primary-color);
+      margin-bottom: 24px;
+      font-weight: 800;
+    }
+
+    p {
+      font-size: 17px;
+      line-height: 1.65;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    .highlight {
+      font-style: italic;
+      text-align: center;
+      font-size: 19px;
+      line-height: 1.7;
+      padding: 8px 20px;
+    }
+  }
+}

@@ -120,8 +120,9 @@ const AdminProductPage = () => {
         }
 
         const uploadData = new FormData();
-        uploadData.append("image", selectedFile);
         uploadData.append("brand_slug", brand.slug);
+        uploadData.append("image", selectedFile);
+        // console.log("brand_slug:", brand.slug);
 
         const uploadRes = await axios.post(
           "http://localhost:5000/api/products/upload",
