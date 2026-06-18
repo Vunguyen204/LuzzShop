@@ -31,7 +31,7 @@ const AdminProductPage = () => {
   });
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/api/products");
+    const res = await axios.get("http://localhost:5000/api/products/admin");
     setProducts(res.data);
   };
 
@@ -160,16 +160,33 @@ const AdminProductPage = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
+  // const handleDelete = async (id) => {
+  //   if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
+
+  //   try {
+  //     await axios.delete(`http://localhost:5000/api/products/${id}`);
+  //     alert("Xóa sản phẩm thành công");
+  //     fetchProducts();
+  //   } catch (error) {
+  //     console.log("Lỗi xóa sản phẩm:", error);
+  //     alert("Xóa sản phẩm thất bại");
+  //   }
+  // };
+
+  const handleUpdateStatus = async (product) => {
+    const newStatus = Number(product.status) === 1 ? 0 : 1;
 
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`);
-      alert("Xóa sản phẩm thành công");
+      await axios.patch(
+        `http://localhost:5000/api/products/${product.product_id}/status`,
+        { status: newStatus },
+      );
+
+      alert("Cập nhật trạng thái thành công");
       fetchProducts();
     } catch (error) {
-      console.log("Lỗi xóa sản phẩm:", error);
-      alert("Xóa sản phẩm thất bại");
+      console.log("Lỗi cập nhật trạng thái:", error);
+      alert("Cập nhật trạng thái thất bại");
     }
   };
 
@@ -474,6 +491,7 @@ const AdminProductPage = () => {
             <th>Giá</th>
             <th>Giá cũ</th>
             <th>Tồn kho</th>
+            <th>Trạng thái</th>
             <th>Thao tác</th>
           </tr>
         </thead>
@@ -505,7 +523,17 @@ const AdminProductPage = () => {
               </td>
 
               <td>{product.total_stock}</td>
-
+              <td>
+                <span
+                  className={`admin-status ${
+                    Number(product.status) === 1
+                      ? "admin-status--active"
+                      : "admin-status--inactive"
+                  }`}
+                >
+                  {Number(product.status) === 1 ? "Đang bán" : "Ngừng bán"}
+                </span>
+              </td>
               <td>
                 <div className="admin-actions">
                   <button
@@ -525,11 +553,18 @@ const AdminProductPage = () => {
                   </button>
 
                   <button
+                    className="admin-actions__patch"
+                    onClick={() => handleUpdateStatus(product)}
+                  >
+                    {Number(product.status) === 1 ? "Ngừng bán" : "Bán lại"}
+                  </button>
+
+                  {/* <button
                     className="admin-actions__delete"
                     onClick={() => handleDelete(product.product_id)}
                   >
                     Xóa
-                  </button>
+                  </button> */}
                 </div>
               </td>
             </tr>

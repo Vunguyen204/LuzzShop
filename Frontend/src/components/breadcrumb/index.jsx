@@ -8,7 +8,9 @@ const breadcrumbMap = {
 
   "vot-pickleball": "Vợt Pickleball",
   "giay-pickleball": "Giày Pickleball",
-  "quan-ao-pickleball": "Quần áo Pickleball",
+  "trang-phuc-pickleball": "Trang phục Pickleball",
+  "quan": "Quần",
+  "ao": "Áo",
   "phu-kien": "Phụ kiện",
 
   cart: "Giỏ hàng",

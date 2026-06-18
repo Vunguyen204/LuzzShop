@@ -16,7 +16,9 @@ router.get("/", (req, res) => {
       p.description,
       p.price,
       p.old_price,
+      p.status,
 
+      COUNT(pv.variant_id) AS total_variant,
       COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
@@ -39,6 +41,79 @@ router.get("/", (req, res) => {
       ON p.brand_id = b.brand_id
     LEFT JOIN product_variants pv
       ON p.product_id = pv.product_id
+
+    WHERE p.status = 1
+
+    GROUP BY
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.image_url,
+      c.category_name,
+      c.slug,
+      b.brand_name,
+      b.slug
+
+    ORDER BY p.product_id DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi lấy danh sách sản phẩm",
+        error: err,
+      });
+    }
+
+    res.json(results);
+  });
+});
+
+router.get("/admin", (req, res) => {
+  const sql = `
+    SELECT
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.status,
+
+      COUNT(pv.variant_id) AS total_variant,
+      COALESCE(SUM(pv.stock), 0) AS total_stock,
+
+      CONCAT(
+        '/uploads/products/',
+        b.slug,
+        '/',
+        p.image_url
+      ) AS image_url,
+
+      c.category_name,
+      c.slug AS category_slug,
+
+      b.brand_name,
+      b.slug AS brand_slug
+
+    FROM products p
+    LEFT JOIN categories c
+      ON p.category_id = c.category_id
+    LEFT JOIN brands b
+      ON p.brand_id = b.brand_id
+    LEFT JOIN product_variants pv
+      ON p.product_id = pv.product_id
+
+    WHERE p.status IN (0,1)
 
     GROUP BY
       p.product_id,
@@ -84,7 +159,9 @@ router.get("/featured", (req, res) => {
       p.description,
       p.price,
       p.old_price,
+      p.status,
 
+      COUNT(pv.variant_id) AS total_variant,
       COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
@@ -107,6 +184,8 @@ router.get("/featured", (req, res) => {
       ON p.brand_id = b.brand_id
     LEFT JOIN product_variants pv
       ON p.product_id = pv.product_id
+
+    WHERE p.status = 1
 
     GROUP BY
       p.product_id,
@@ -179,7 +258,7 @@ router.get("/category/:slug", (req, res) => {
     LEFT JOIN product_variants pv
       ON p.product_id = pv.product_id
 
-    WHERE c.slug = ?
+    WHERE c.slug = ? AND p.status = 1
 
     GROUP BY
       p.product_id,
@@ -353,38 +432,62 @@ router.put("/:id", (req, res) => {
 });
 
 // Xóa sản phẩm
-router.delete("/:id", (req, res) => {
+// router.delete("/:id", (req, res) => {
+//   const { id } = req.params;
+
+//   const deleteVariantSql = `
+//     DELETE FROM product_variants
+//     WHERE product_id = ?
+//   `;
+
+//   const deleteProductSql = `
+//     DELETE FROM products
+//     WHERE product_id = ?
+//   `;
+
+//   db.query(deleteVariantSql, [id], (err) => {
+//     if (err) {
+//       return res.status(500).json({
+//         message: "Lỗi xóa biến thể sản phẩm",
+//         error: err,
+//       });
+//     }
+
+//     db.query(deleteProductSql, [id], (err2) => {
+//       if (err2) {
+//         return res.status(500).json({
+//           message: "Lỗi xóa sản phẩm",
+//           error: err2,
+//         });
+//       }
+
+//       res.json({
+//         message: "Xóa sản phẩm thành công",
+//       });
+//     });
+//   });
+// });
+
+router.patch("/:id/status", (req, res) => {
   const { id } = req.params;
+  const { status } = req.body;
 
-  const deleteVariantSql = `
-    DELETE FROM product_variants
+  const sql = `
+    UPDATE products
+    SET status = ?
     WHERE product_id = ?
   `;
 
-  const deleteProductSql = `
-    DELETE FROM products
-    WHERE product_id = ?
-  `;
-
-  db.query(deleteVariantSql, [id], (err) => {
+  db.query(sql, [status, id], (err) => {
     if (err) {
       return res.status(500).json({
-        message: "Lỗi xóa biến thể sản phẩm",
+        message: "Lỗi cập nhật trạng thái sản phẩm",
         error: err,
       });
     }
 
-    db.query(deleteProductSql, [id], (err2) => {
-      if (err2) {
-        return res.status(500).json({
-          message: "Lỗi xóa sản phẩm",
-          error: err2,
-        });
-      }
-
-      res.json({
-        message: "Xóa sản phẩm thành công",
-      });
+    res.json({
+      message: "Cập nhật trạng thái thành công",
     });
   });
 });
@@ -429,10 +532,13 @@ router.get("/search/:keyword", (req, res) => {
       ON p.product_id = pv.product_id
 
     WHERE
-      p.product_name LIKE ?
-      OR p.sku LIKE ?
-      OR b.brand_name LIKE ?
-      OR c.category_name LIKE ?
+      p.status = 1
+      AND (
+        p.product_name LIKE ?
+        OR p.sku LIKE ?
+        OR b.brand_name LIKE ?
+        OR c.category_name LIKE ?
+      )
 
     GROUP BY
       p.product_id,

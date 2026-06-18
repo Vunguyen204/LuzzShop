@@ -9,6 +9,7 @@ const AdminCategoryPage = () => {
     category_name: "",
     description: "",
     slug: "",
+    parent_id: "",
     ordering: "",
     status: 1,
   });
@@ -36,6 +37,7 @@ const AdminCategoryPage = () => {
       category_name: "",
       description: "",
       slug: "",
+      parent_id: "",
       ordering: "",
       status: 1,
     });
@@ -86,6 +88,7 @@ const AdminCategoryPage = () => {
       category_name: category.category_name,
       description: category.description || "",
       slug: category.slug,
+      parent_id: category.parent_id || "",
       ordering: category.ordering,
       status: category.status,
     });
@@ -167,6 +170,25 @@ const AdminCategoryPage = () => {
               </div>
 
               <div className="admin-form__row">
+                <label>Danh mục cha</label>
+                <select
+                  name="parent_id"
+                  value={formData.parent_id}
+                  onChange={handleChange}
+                >
+                  <option value="">Không có</option>
+
+                  {categories
+                    .filter((item) => item.category_id !== editingId)
+                    .map((item) => (
+                      <option key={item.category_id} value={item.category_id}>
+                        {item.category_name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="admin-form__row">
                 <label>Thứ tự</label>
                 <input
                   type="number"
@@ -241,6 +263,7 @@ const AdminCategoryPage = () => {
           <tr>
             <th>ID</th>
             <th>Tên danh mục</th>
+            <th>Danh mục cha</th>
             <th>Mô tả</th>
             <th>Slug</th>
             <th>Thứ tự</th>
@@ -254,6 +277,7 @@ const AdminCategoryPage = () => {
             <tr key={category.category_id}>
               <td>{category.category_id}</td>
               <td>{category.category_name}</td>
+              <td>{category.parent_name || "Không có"}</td>
               <td>{category.description}</td>
               <td>{category.slug}</td>
               <td>{category.ordering}</td>

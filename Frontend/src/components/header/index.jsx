@@ -40,7 +40,9 @@ const Header = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
+        const res = await axios.get(
+          "http://localhost:5000/api/categories/parents",
+        );
         setCategories(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);
@@ -126,7 +128,11 @@ const Header = () => {
                     menu.menu_name === "Sản phẩm" ? "has-dropdown" : ""
                   }
                 >
-                  <Link to={menu.slug}>{menu.menu_name}</Link>
+                  <Link
+                    to={menu.menu_name === "Sản phẩm" ? "/products" : menu.slug}
+                  >
+                    {menu.menu_name}
+                  </Link>
 
                   {menu.menu_name === "Sản phẩm" && (
                     <div className="product-dropdown">

@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { register } from "../../api/authApi";
 import Toast from "../../components/Toast";
 import "../auth.scss";
 
 function RegisterPage() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -46,6 +48,11 @@ function RegisterPage() {
       });
 
       showToast(res.data.message, "success");
+
+      setTimeout(() => {
+        navigate("/login");
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       showToast(error.response?.data?.message || "Đăng ký thất bại", "error");
     }
@@ -54,12 +61,12 @@ function RegisterPage() {
   return (
     <div className="auth-page">
       {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        )}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <form className="auth-box" onSubmit={handleSubmit}>
         <h2>Đăng ký</h2>
         <div className="auth-line"></div>

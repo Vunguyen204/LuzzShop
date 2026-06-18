@@ -64,15 +64,23 @@ function ProductPage() {
   }, []);
 
   useEffect(() => {
-    if (slug && categories.length > 0) {
-      const category = categories.find((item) => item.slug === slug);
+    if (categories.length === 0) return;
 
-      if (category) {
-        setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (slug) {
+        const category = categories.find((item) => item.slug === slug);
+
+        if (category) {
           setSelectedCategories([Number(category.category_id)]);
-        }, 0);
+        } else {
+          setSelectedCategories([]);
+        }
+      } else {
+        setSelectedCategories([]);
       }
-    }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [slug, categories]);
 
   useEffect(() => {

@@ -136,6 +136,8 @@
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
+  text-align: center;
+
 
   &--active {
     background: #d4edda;
@@ -168,6 +170,24 @@
 
     &:hover {
       background: #e0a800;
+    }
+  }
+
+  &__variant {
+    background: #28a745;
+    color: #fff;
+
+    &:hover {
+      background: #218838;
+    }
+  }
+
+  &__patch {
+    background: #0d6efd;
+    color: #fff;
+
+    &:hover {
+      background: #0b5ed7;
     }
   }
 
