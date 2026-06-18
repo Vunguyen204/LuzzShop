@@ -12,56 +12,152 @@ router.post("/", (req, res) => {
     });
   }
 
-  const orderSql = `
-  INSERT INTO orders
-  (user_id, full_name, phone, total_amount, status, shipping_address, note, payment_method)
-  VALUES (?, ?, ?, ?, 'Pending', ?, ?, 'COD')
-`;
+  db.beginTransaction((err) => {
+    if (err) return res.status(500).json(err);
 
-  db.query(
-    orderSql,
-    [user_id || null, full_name, phone, total_amount, address, note || null],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({
-          message: "Lỗi tạo đơn hàng",
-          error: err,
-        });
-      }
+    const orderSql = `
+      INSERT INTO orders
+      (user_id, full_name, phone, total_amount, status, shipping_address, note, payment_method)
+      VALUES (?, ?, ?, ?, 'Pending', ?, ?, 'COD')
+    `;
 
-      const orderId = result.insertId;
-
-      const orderItems = items.map((item) => [
-        orderId,
-        item.product_id,
-        item.product_name,
-        item.image_url,
-        item.quantity,
-        item.price,
-        Number(item.price) * item.quantity,
-      ]);
-
-      const itemSql = `
-        INSERT INTO order_items
-        (order_id, product_id, product_name, image_url, quantity, price, subtotal)
-        VALUES ?
-      `;
-
-      db.query(itemSql, [orderItems], (err2) => {
-        if (err2) {
-          return res.status(500).json({
-            message: "Lỗi tạo chi tiết đơn hàng",
-            error: err2,
+    db.query(
+      orderSql,
+      [user_id || null, full_name, phone, total_amount, address, note || null],
+      (err, result) => {
+        if (err) {
+          return db.rollback(() => {
+            res.status(500).json({
+              message: "Lỗi tạo đơn hàng",
+              error: err,
+            });
           });
         }
 
-        res.json({
-          message: "Đặt hàng thành công",
-          order_id: orderId,
+        const orderId = result.insertId;
+
+        const orderItems = items.map((item) => [
+          orderId,
+          item.product_id,
+          item.variant_id || null,
+          item.product_name,
+          item.sku || null,
+          item.image_url,
+          item.color || null,
+          item.size || null,
+          item.quantity,
+          item.price,
+          Number(item.price) * Number(item.quantity),
+        ]);
+
+        const itemSql = `
+          INSERT INTO order_items
+          (
+            order_id,
+            product_id,
+            variant_id,
+            product_name,
+            image_url,
+            color,
+            size,
+            quantity,
+            price,
+            subtotal
+          )
+          VALUES ?
+        `;
+
+        db.query(itemSql, [orderItems], (err2) => {
+          if (err2) {
+            return db.rollback(() => {
+              res.status(500).json({
+                message: "Lỗi tạo chi tiết đơn hàng",
+                error: err2,
+              });
+            });
+          }
+
+          const updateStockTasks = items.map((item) => {
+            return new Promise((resolve, reject) => {
+              const quantity = Number(item.quantity);
+
+              if (item.variant_id) {
+                const updateVariantStockSql = `
+                  UPDATE product_variants
+                  SET stock = stock - ?
+                  WHERE variant_id = ? AND stock >= ?
+                `;
+
+                db.query(
+                  updateVariantStockSql,
+                  [quantity, item.variant_id, quantity],
+                  (err3, stockResult) => {
+                    if (err3) return reject(err3);
+
+                    if (stockResult.affectedRows === 0) {
+                      return reject(
+                        new Error(`${item.product_name} không đủ tồn kho`)
+                      );
+                    }
+
+                    resolve();
+                  }
+                );
+              } else {
+                const updateProductStockSql = `
+                  UPDATE products
+                  SET stock = stock - ?
+                  WHERE product_id = ? AND stock >= ?
+                `;
+
+                db.query(
+                  updateProductStockSql,
+                  [quantity, item.product_id, quantity],
+                  (err3, stockResult) => {
+                    if (err3) return reject(err3);
+
+                    if (stockResult.affectedRows === 0) {
+                      return reject(
+                        new Error(`${item.product_name} không đủ tồn kho`)
+                      );
+                    }
+
+                    resolve();
+                  }
+                );
+              }
+            });
+          });
+
+          Promise.all(updateStockTasks)
+            .then(() => {
+              db.commit((err4) => {
+                if (err4) {
+                  return db.rollback(() => {
+                    res.status(500).json({
+                      message: "Lỗi xác nhận đơn hàng",
+                      error: err4,
+                    });
+                  });
+                }
+
+                res.json({
+                  message: "Đặt hàng thành công",
+                  order_id: orderId,
+                });
+              });
+            })
+            .catch((error) => {
+              db.rollback(() => {
+                res.status(400).json({
+                  message: error.message,
+                });
+              });
+            });
         });
-      });
-    },
-  );
+      }
+    );
+  });
 });
 
 router.get("/", (req, res) => {
@@ -78,7 +174,6 @@ router.get("/", (req, res) => {
   });
 });
 
-// Lấy đơn hàng theo user
 router.get("/user/:userId", (req, res) => {
   const { userId } = req.params;
 

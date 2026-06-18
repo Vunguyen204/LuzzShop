@@ -88,6 +88,15 @@
         }
     }
 
+    &__variant {
+        background: #28a745;
+        color: #fff;
+
+        &:hover {
+            background: #218838;
+        }
+    }
+
     &__delete {
         background: #dc3545;
         color: #fff;

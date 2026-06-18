@@ -9,17 +9,16 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const [useDefaultInfo, setUseDefaultInfo] = useState(true);
   const [toast, setToast] = useState(null);
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
-
-    setTimeout(() => {
-      setToast(null);
-    }, 2500);
+    setTimeout(() => setToast(null), 2500);
   };
 
   const [cartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
   });
+
   const [formData, setFormData] = useState(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -31,9 +30,12 @@ function CheckoutPage() {
     };
   });
 
+  const getCartKey = (item) =>
+    `${item.product_id}-${item.variant_id || "no-variant"}`;
+
   const totalAmount = cartItems.reduce(
-    (total, item) => total + Number(item.price) * item.quantity,
-    0,
+    (total, item) => total + Number(item.price) * Number(item.quantity),
+    0
   );
 
   const handleChange = (e) => {
@@ -75,7 +77,7 @@ function CheckoutPage() {
       showToast(res.data.message, "success");
 
       setTimeout(() => {
-        navigate("/");
+        navigate("/products");
       }, 1200);
     } catch (error) {
       showToast(error.response?.data?.message || "Đặt hàng thất bại", "error");
@@ -85,6 +87,7 @@ function CheckoutPage() {
   return (
     <div className="checkout-page">
       <Breadcrumb />
+
       {toast && (
         <Toast
           message={toast.message}
@@ -96,6 +99,7 @@ function CheckoutPage() {
       <div className="checkout-container">
         <form className="checkout-form" onSubmit={handleOrder}>
           <h2>Thông tin giao hàng</h2>
+
           <div className="shipping-option">
             <label>
               <input
@@ -187,7 +191,7 @@ function CheckoutPage() {
           <h2>Đơn hàng của bạn</h2>
 
           {cartItems.map((item) => (
-            <div className="order-item" key={item.product_id}>
+            <div className="order-item" key={getCartKey(item)}>
               <img
                 src={`http://localhost:5000${item.image_url}`}
                 alt={item.product_name}
@@ -195,9 +199,21 @@ function CheckoutPage() {
 
               <div>
                 <h4>{item.product_name}</h4>
+
+                {item.sku && <p>Mã: {item.sku}</p>}
+
+                {(item.color || item.size) && (
+                  <p>
+                    Phân loại: {item.color || ""}
+                    {item.size ? ` / ${item.size}` : ""}
+                  </p>
+                )}
+
                 <p>Số lượng: {item.quantity}</p>
+
                 <span>
-                  {(Number(item.price) * item.quantity).toLocaleString()}đ
+                  {(Number(item.price) * Number(item.quantity)).toLocaleString()}
+                  đ
                 </span>
               </div>
             </div>

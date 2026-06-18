@@ -16,6 +16,7 @@ import AdminMenuPage from "../pages/adminMenuPage";
 import AdminCategoryPage from "../pages/adminCategoryPage";
 import AdminBrandPage from "../pages/adminBrandPage";
 import AdminProductPage from "../pages/adminProductPage";
+import AdminVariantPage from "../pages/adminVariantPage";
 import AdminOrderPage from "../pages/adminOrderPage";
 import AdminUserPage from "../pages/adminUserPage";
 
@@ -42,6 +43,7 @@ export const ROUTERS = {
     CATEGORY: "categories",
     BRAND: "brands",
     PRODUCT: "products",
+    VARIANT: "products/:productId/variants",
     ORDER: "orders",
     USER: "users",
   },
@@ -122,6 +124,10 @@ export const adminRoutes = [
   {
     path: ROUTERS.ADMIN.PRODUCT,
     component: AdminProductPage,
+  },
+  {
+    path: ROUTERS.ADMIN.VARIANT,
+    component: AdminVariantPage,
   },
   {
     path: ROUTERS.ADMIN.ORDER,

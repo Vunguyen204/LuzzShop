@@ -53,7 +53,7 @@ const DashBoardPage = () => {
       case "Shipping":
         return "Đang giao";
       case "Completed":
-        return "Đã hoàn thành";
+        return "Hoàn thành";
       case "Cancelled":
         return "Đã hủy";
       default:

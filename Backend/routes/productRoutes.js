@@ -12,7 +12,6 @@ router.get("/", (req, res) => {
       p.brand_id,
       p.product_name,
       p.slug,
-      p.sku,
       p.description,
       p.price,
       p.old_price,
@@ -77,7 +76,7 @@ router.get("/featured", (req, res) => {
       c.slug AS category_slug,
 
       b.brand_name,
-      b.slug
+      b.slug AS brand_slug
 
     FROM products p
     LEFT JOIN categories c
@@ -105,10 +104,38 @@ router.get("/category/:slug", (req, res) => {
   const { slug } = req.params;
 
   const sql = `
-    SELECT p.*
+    SELECT
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.stock,
+
+      CONCAT(
+        '/uploads/products/',
+        b.slug,
+        '/',
+        p.image_url
+      ) AS image_url,
+
+      c.category_name,
+      c.slug AS category_slug,
+
+      b.brand_name,
+      b.slug AS brand_slug
+
     FROM products p
-    JOIN categories c ON p.category_id = c.category_id
+    JOIN categories c
+      ON p.category_id = c.category_id
+    LEFT JOIN brands b
+      ON p.brand_id = b.brand_id
     WHERE c.slug = ?
+    ORDER BY p.product_id DESC
   `;
 
   db.query(sql, [slug], (err, results) => {
@@ -179,7 +206,7 @@ router.post("/", (req, res) => {
       res.json({
         message: "Thêm sản phẩm thành công",
       });
-    },
+    }
   );
 });
 
@@ -262,7 +289,7 @@ router.put("/:id", (req, res) => {
       res.json({
         message: "Cập nhật sản phẩm thành công",
       });
-    },
+    }
   );
 });
 
@@ -341,7 +368,46 @@ router.get("/:id", (req, res) => {
       });
     }
 
-    res.json(results[0]);
+    const product = results[0];
+
+    const variantSql = `
+      SELECT
+        pv.variant_id,
+        pv.product_id,
+        pv.color,
+        pv.size,
+        pv.stock,
+
+        CONCAT(
+          '/uploads/products/',
+          b.slug,
+          '/',
+          pv.image_url
+        ) AS image_url,
+
+        pv.created_at
+      FROM product_variants pv
+      JOIN products p
+        ON pv.product_id = p.product_id
+      LEFT JOIN brands b
+        ON p.brand_id = b.brand_id
+      WHERE pv.product_id = ?
+      ORDER BY pv.color ASC, pv.size ASC
+    `;
+
+    db.query(variantSql, [productId], (err2, variantResults) => {
+      if (err2) {
+        return res.status(500).json({
+          message: "Lỗi lấy biến thể sản phẩm",
+          error: err2,
+        });
+      }
+
+      res.json({
+        ...product,
+        variants: variantResults,
+      });
+    });
   });
 });
 

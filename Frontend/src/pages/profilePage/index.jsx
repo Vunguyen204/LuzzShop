@@ -7,6 +7,27 @@ const ProfilePage = () => {
     const currentUser = localStorage.getItem("user");
     return currentUser ? JSON.parse(currentUser) : null;
   });
+  const getStatusText = (status) => {
+    switch (status) {
+      case "Pending":
+        return "Chờ xác nhận";
+
+      case "Confirmed":
+        return "Đã xác nhận";
+
+      case "Shipping":
+        return "Đang giao";
+
+      case "Completed":
+        return "Hoàn thành";
+
+      case "Cancelled":
+        return "Đã hủy";
+
+      default:
+        return status;
+    }
+  };
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
@@ -70,10 +91,14 @@ const ProfilePage = () => {
                       <td>#{order.order_id}</td>
                       <td>{new Date(order.order_date).toLocaleDateString()}</td>
                       <td>{order.shipping_address}</td>
+                      <td>{Number(order.total_amount).toLocaleString()}đ</td>
                       <td>
-                        {Number(order.total_amount).toLocaleString()}đ
+                        <span
+                          className={`status ${order.status.toLowerCase()}`}
+                        >
+                          {getStatusText(order.status)}
+                        </span>
                       </td>
-                      <td>{order.status}</td>
                     </tr>
                   ))
                 ) : (

@@ -1,0 +1,86 @@
+.admin-variant-page {
+  padding: 24px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 18px 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+
+    h2 {
+      margin-bottom: 6px;
+      color: var(--primary-color);
+    }
+
+    p {
+      color: #666;
+      font-size: 15px;
+    }
+
+    div:last-child {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      background: var(--primary-color);
+      color: #fff;
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+}
+
+.variant-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin: 10px 12px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  padding: 6px;
+}
+
+.admin-variant-page .admin-table {
+  margin-top: 20px;
+}
+
+.admin-variant-page .admin-table td button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.admin-variant-page .admin-table td button:first-child {
+  background: #ffc107;
+  color: #000;
+}
+
+.admin-variant-page .admin-table td button:first-child:hover {
+  background: #e0a800;
+}
+
+.admin-variant-page .admin-table td button:last-child {
+  background: #dc3545;
+  color: #fff;
+}
+
+.admin-variant-page .admin-table td button:last-child:hover {
+  background: #c82333;
+}

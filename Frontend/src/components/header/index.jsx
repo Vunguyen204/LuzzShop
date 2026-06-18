@@ -168,6 +168,15 @@ const Header = () => {
                       Trang cá nhân
                     </Link>
 
+                    {user?.role_id === 1 && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Trang quản trị
+                      </Link>
+                    )}
+
                     <button
                       onClick={() => {
                         setIsUserMenuOpen(false);

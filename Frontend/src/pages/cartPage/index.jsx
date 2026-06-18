@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb";
-import Toast from "../../components/toast";
+import Toast from "../../components/Toast";
 import "./style.scss";
 
 function CartPage() {
@@ -13,15 +13,14 @@ function CartPage() {
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
-
-    setTimeout(() => {
-      setToast(null);
-    }, 2500);
+    setTimeout(() => setToast(null), 2500);
   };
 
-  const updateQuantity = (productId, quantity) => {
-    const item = cartItems.find((item) => item.product_id === productId);
+  const getCartKey = (item) =>
+    `${item.product_id}-${item.variant_id || "no-variant"}`;
 
+  const updateQuantity = (cartKey, quantity) => {
+    const item = cartItems.find((item) => getCartKey(item) === cartKey);
     if (!item) return;
 
     const newQuantity = Number(quantity);
@@ -32,9 +31,7 @@ function CartPage() {
       return;
     }
 
-    if (!newQuantity || newQuantity < 1) {
-      return;
-    }
+    if (!newQuantity || newQuantity < 1) return;
 
     if (newQuantity > stock) {
       showToast(`Chỉ còn ${stock} sản phẩm trong kho`, "warning");
@@ -42,7 +39,9 @@ function CartPage() {
     }
 
     const newCart = cartItems.map((item) =>
-      item.product_id === productId ? { ...item, quantity: newQuantity } : item,
+      getCartKey(item) === cartKey
+        ? { ...item, quantity: newQuantity }
+        : item
     );
 
     setCartItems(newCart);
@@ -50,8 +49,8 @@ function CartPage() {
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  const removeItem = (productId) => {
-    const newCart = cartItems.filter((item) => item.product_id !== productId);
+  const removeItem = (cartKey) => {
+    const newCart = cartItems.filter((item) => getCartKey(item) !== cartKey);
 
     setCartItems(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
@@ -60,8 +59,8 @@ function CartPage() {
   };
 
   const totalAmount = cartItems.reduce(
-    (total, item) => total + Number(item.price) * item.quantity,
-    0,
+    (total, item) => total + Number(item.price) * Number(item.quantity),
+    0
   );
 
   return (
@@ -100,69 +99,81 @@ function CartPage() {
               </thead>
 
               <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.product_id}>
-                    <td className="product-info">
-                      <img
-                        src={`http://localhost:5000${item.image_url}`}
-                        alt={item.product_name}
-                      />
-                      <span>
-                        <Link to={`/products/${item.product_id}`}>
-                          {item.product_name}
-                        </Link>
-                      </span>
-                    </td>
+                {cartItems.map((item) => {
+                  const cartKey = getCartKey(item);
 
-                    <td>{Number(item.price).toLocaleString()}đ</td>
-
-                    <td>
-                      <div className="quantity-box">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.product_id, item.quantity - 1)
-                          }
-                        >
-                          -
-                        </button>
-
-                        <input
-                          type="number"
-                          min="1"
-                          max={item.stock}
-                          value={item.quantity}
-                          onChange={(e) =>
-                            updateQuantity(
-                              item.product_id,
-                              Number(e.target.value),
-                            )
-                          }
+                  return (
+                    <tr key={cartKey}>
+                      <td className="product-info">
+                        <img
+                          src={`http://localhost:5000${item.image_url}`}
+                          alt={item.product_name}
                         />
 
+                        <span>
+                          <Link to={`/products/${item.product_id}`}>
+                            {item.product_name}
+                          </Link>
+
+                          {(item.color || item.size) && (
+                            <p className="variant-info">
+                              Phân loại: {item.color || "Không có màu"}
+                              {item.size ? ` / ${item.size}` : ""}
+                            </p>
+                          )}
+                        </span>
+                      </td>
+
+                      <td>{Number(item.price).toLocaleString()}đ</td>
+
+                      <td>
+                        <div className="quantity-box">
+                          <button
+                            onClick={() =>
+                              updateQuantity(cartKey, item.quantity - 1)
+                            }
+                          >
+                            -
+                          </button>
+
+                          <input
+                            type="number"
+                            min="1"
+                            max={item.stock}
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updateQuantity(cartKey, Number(e.target.value))
+                            }
+                          />
+
+                          <button
+                            onClick={() =>
+                              updateQuantity(cartKey, item.quantity + 1)
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                      </td>
+
+                      <td className="total-price">
+                        {(
+                          Number(item.price) * Number(item.quantity)
+                        ).toLocaleString()}
+                        đ
+                      </td>
+
+                      <td>
                         <button
-                          onClick={() =>
-                            updateQuantity(item.product_id, item.quantity + 1)
-                          }
+                          className="remove-btn"
+                          onClick={() => removeItem(cartKey)}
                         >
-                          +
+                          Xóa
                         </button>
-                      </div>
-                    </td>
-
-                    <td className="total-price">
-                      {(Number(item.price) * item.quantity).toLocaleString()}đ
-                    </td>
-
-                    <td>
-                      <button
-                        className="remove-btn"
-                        onClick={() => removeItem(item.product_id)}
-                      >
-                        Xóa
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 

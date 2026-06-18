@@ -9,7 +9,9 @@ router.get("/", (req, res) => {
       (SELECT COUNT(*) FROM products) AS totalProducts,
       (SELECT COUNT(*) FROM orders) AS totalOrders,
       (SELECT COUNT(*) FROM users) AS totalUsers,
-      (SELECT IFNULL(SUM(total_amount), 0) FROM orders) AS totalRevenue
+      (SELECT IFNULL(SUM(total_amount), 0)
+ FROM orders
+ WHERE status = 'Completed') AS totalRevenue
   `;
 
   db.query(sql, (err, results) => {

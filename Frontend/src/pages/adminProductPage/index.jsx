@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.scss";
 
@@ -11,6 +12,7 @@ const AdminProductPage = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [sortType, setSortType] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate();
 
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -513,6 +515,15 @@ const AdminProductPage = () => {
                     onClick={() => handleEdit(product)}
                   >
                     Sửa
+                  </button>
+
+                  <button
+                    className="admin-actions__variant"
+                    onClick={() =>
+                      navigate(`/admin/products/${product.product_id}/variants`)
+                    }
+                  >
+                    Biến thể
                   </button>
 
                   <button

@@ -66,7 +66,7 @@ const AdminOrderPage = () => {
       case "Shipping":
         return "Đang giao";
       case "Completed":
-        return "Đã hoàn thành";
+        return "Hoàn thành";
       case "Cancelled":
         return "Đã hủy";
       default:
@@ -126,7 +126,7 @@ const AdminOrderPage = () => {
           <option value="Pending">Chờ xử lý</option>
           <option value="Confirmed">Đã xác nhận</option>
           <option value="Shipping">Đang giao</option>
-          <option value="Completed">Đã hoàn thành</option>
+          <option value="Completed">Hoàn thành</option>
           <option value="Cancelled">Đã hủy</option>
         </select>
 
@@ -234,7 +234,7 @@ const AdminOrderPage = () => {
                   <option value="Pending">Chờ xử lý</option>
                   <option value="Confirmed">Đã xác nhận</option>
                   <option value="Shipping">Đang giao</option>
-                  <option value="Completed">Đã hoàn thành</option>
+                  <option value="Completed">Hoàn thành</option>
                   <option value="Cancelled">Đã hủy</option>
                 </select>
               </div>
