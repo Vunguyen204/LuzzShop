@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import ProductCard from "../../components/ProductCard";
 import Breadcrumb from "../../components/Breadcrumb";
@@ -20,6 +20,9 @@ function ProductPage() {
   const [selectedPrices, setSelectedPrices] = useState([]);
   const [sortType, setSortType] = useState("default");
 
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get("search");
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
 
@@ -36,11 +39,22 @@ function ProductPage() {
       : null;
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/products")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.log("Lỗi lấy sản phẩm:", err));
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        const url = keyword
+          ? `http://localhost:5000/api/products/search/${encodeURIComponent(keyword)}`
+          : "http://localhost:5000/api/products";
+
+        const res = await axios.get(url);
+
+        setProducts(res.data);
+      } catch (error) {
+        console.log("Lỗi lấy sản phẩm:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [keyword]);
 
   useEffect(() => {
     axios
@@ -143,9 +157,11 @@ function ProductPage() {
         <main className="product-content">
           <div className="product-content__top">
             <h2>
-              {currentCategory
-                ? currentCategory.category_name.toUpperCase()
-                : "TẤT CẢ SẢN PHẨM"}{" "}
+              {keyword
+                ? `KẾT QUẢ TÌM KIẾM: "${keyword}"`
+                : currentCategory
+                  ? currentCategory.category_name.toUpperCase()
+                  : "TẤT CẢ SẢN PHẨM"}{" "}
               ({filteredProducts.length})
             </h2>
 

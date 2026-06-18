@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useCallback } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCallback } from "react";
 import axios from "axios";
 import "./style.scss";
 
@@ -45,8 +46,12 @@ function AdminVariantPage() {
   }, [productId]);
 
   useEffect(() => {
-    fetchProduct();
-    fetchVariants();
+    const timer = setTimeout(() => {
+      fetchProduct();
+      fetchVariants();
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [fetchProduct, fetchVariants]);
 
   const resetForm = () => {

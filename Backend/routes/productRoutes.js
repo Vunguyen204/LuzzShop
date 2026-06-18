@@ -206,7 +206,7 @@ router.post("/", (req, res) => {
       res.json({
         message: "Thêm sản phẩm thành công",
       });
-    }
+    },
   );
 });
 
@@ -289,7 +289,7 @@ router.put("/:id", (req, res) => {
       res.json({
         message: "Cập nhật sản phẩm thành công",
       });
-    }
+    },
   );
 });
 
@@ -312,6 +312,63 @@ router.delete("/:id", (req, res) => {
     res.json({
       message: "Xóa sản phẩm thành công",
     });
+  });
+});
+
+// Tìm kiếm sản phẩm
+router.get("/search/:keyword", (req, res) => {
+  const keyword = `%${req.params.keyword}%`;
+
+  const sql = `
+    SELECT
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.stock,
+
+      CONCAT(
+        '/uploads/products/',
+        b.slug,
+        '/',
+        p.image_url
+      ) AS image_url,
+
+      c.category_name,
+      c.slug AS category_slug,
+
+      b.brand_name,
+      b.slug AS brand_slug
+
+    FROM products p
+    LEFT JOIN brands b
+      ON p.brand_id = b.brand_id
+    LEFT JOIN categories c
+      ON p.category_id = c.category_id
+
+    WHERE
+      p.product_name LIKE ?
+      OR p.sku LIKE ?
+      OR b.brand_name LIKE ?
+      OR c.category_name LIKE ?
+
+    ORDER BY p.product_name ASC
+  `;
+
+  db.query(sql, [keyword, keyword, keyword, keyword], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi tìm kiếm sản phẩm",
+        error: err,
+      });
+    }
+
+    res.json(results);
   });
 });
 

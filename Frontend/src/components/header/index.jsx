@@ -1,4 +1,5 @@
 import { memo, useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.scss";
 import { Link } from "react-router-dom";
@@ -14,6 +15,8 @@ const Header = () => {
   const [menus, setMenus] = useState([]);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
   const userMenuRef = useRef(null);
 
   const [cartCount, setCartCount] = useState(getCartCount);
@@ -88,6 +91,12 @@ const Header = () => {
     };
   }, []);
 
+  const handleSearch = () => {
+    if (!keyword.trim()) return;
+
+    navigate(`/products?search=${encodeURIComponent(keyword)}`);
+  };
+
   return (
     <header className="header">
       <div className="header-top">
@@ -143,8 +152,18 @@ const Header = () => {
 
         <div className="header-main__actions">
           <div className="search-box">
-            <input type="text" placeholder="Tìm kiếm" />
-            <button>
+            <input
+              type="text"
+              placeholder="Tìm kiếm sản phẩm..."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
+            />
+            <button onClick={handleSearch}>
               <i className="fa fa-search"></i>
             </button>
           </div>
