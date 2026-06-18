@@ -44,7 +44,8 @@ function ProductCard({ product, showToast }) {
 
   return (
     <div className="product-card">
-      <Link to={`/products/${product.product_id}`}>
+      {/* <Link to={`/products/${product.product_id}`}> */}
+      <Link to={`/products/${product.slug}`}>
         <div className="product-card__image">
           {isSale && (
             <div className="sale-badge">

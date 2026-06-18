@@ -266,7 +266,7 @@ router.post("/", (req, res) => {
       res.json({
         message: "Thêm sản phẩm thành công",
       });
-    }
+    },
   );
 });
 
@@ -348,7 +348,7 @@ router.put("/:id", (req, res) => {
       res.json({
         message: "Cập nhật sản phẩm thành công",
       });
-    }
+    },
   );
 });
 
@@ -465,10 +465,146 @@ router.get("/search/:keyword", (req, res) => {
   });
 });
 
-// Lấy chi tiết sản phẩm theo id
-router.get("/:id", (req, res) => {
-  const productId = req.params.id;
+// router.get("/slug/:slug", (req, res) => {
+//   const { slug } = req.params;
 
+//   const sql = `
+//     SELECT p.*,
+//            c.category_name,
+//            b.brand_name
+//     FROM products p
+//     LEFT JOIN categories c ON p.category_id = c.category_id
+//     LEFT JOIN brands b ON p.brand_id = b.brand_id
+//     WHERE p.slug = ?
+//   `;
+
+//   db.query(sql, [slug], (err, results) => {
+//     if (err) return res.status(500).json(err);
+
+//     if (results.length === 0) {
+//       return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+//     }
+
+//     res.json(results[0]);
+//   });
+// });
+
+// // Lấy chi tiết sản phẩm theo id
+// router.get("/:id", (req, res) => {
+//   const productId = req.params.id;
+
+//   const sql = `
+//     SELECT
+//       p.product_id,
+//       p.category_id,
+//       p.brand_id,
+//       p.product_name,
+//       p.slug,
+//       p.sku,
+//       p.description,
+//       p.price,
+//       p.old_price,
+
+//       COALESCE(SUM(pv.stock), 0) AS total_stock,
+
+//       CONCAT(
+//         '/uploads/products/',
+//         b.slug,
+//         '/',
+//         p.image_url
+//       ) AS image_url,
+
+//       c.category_name,
+//       c.slug AS category_slug,
+
+//       b.brand_name,
+//       b.slug AS brand_slug
+
+//     FROM products p
+//     LEFT JOIN categories c
+//       ON p.category_id = c.category_id
+//     LEFT JOIN brands b
+//       ON p.brand_id = b.brand_id
+//     LEFT JOIN product_variants pv
+//       ON p.product_id = pv.product_id
+
+//     WHERE p.product_id = ?
+
+//     GROUP BY
+//       p.product_id,
+//       p.category_id,
+//       p.brand_id,
+//       p.product_name,
+//       p.slug,
+//       p.sku,
+//       p.description,
+//       p.price,
+//       p.old_price,
+//       p.image_url,
+//       c.category_name,
+//       c.slug,
+//       b.brand_name,
+//       b.slug
+//   `;
+
+//   db.query(sql, [productId], (err, results) => {
+//     if (err) {
+//       return res.status(500).json({
+//         message: "Lỗi lấy chi tiết sản phẩm",
+//         error: err,
+//       });
+//     }
+
+//     if (results.length === 0) {
+//       return res.status(404).json({
+//         message: "Không tìm thấy sản phẩm",
+//       });
+//     }
+
+//     const product = results[0];
+
+//     const variantSql = `
+//       SELECT
+//         pv.variant_id,
+//         pv.product_id,
+//         pv.color,
+//         pv.size,
+//         pv.stock,
+
+//         CONCAT(
+//           '/uploads/products/',
+//           b.slug,
+//           '/',
+//           pv.image_url
+//         ) AS image_url,
+
+//         pv.created_at
+//       FROM product_variants pv
+//       JOIN products p
+//         ON pv.product_id = p.product_id
+//       LEFT JOIN brands b
+//         ON p.brand_id = b.brand_id
+//       WHERE pv.product_id = ?
+//       ORDER BY pv.color ASC, pv.size ASC
+//     `;
+
+//     db.query(variantSql, [productId], (err2, variantResults) => {
+//       if (err2) {
+//         return res.status(500).json({
+//           message: "Lỗi lấy biến thể sản phẩm",
+//           error: err2,
+//         });
+//       }
+
+//       res.json({
+//         ...product,
+//         variants: variantResults,
+//       });
+//     });
+//   });
+// });
+
+const getProductDetail = (whereSql, value, res) => {
   const sql = `
     SELECT
       p.product_id,
@@ -504,7 +640,7 @@ router.get("/:id", (req, res) => {
     LEFT JOIN product_variants pv
       ON p.product_id = pv.product_id
 
-    WHERE p.product_id = ?
+    WHERE ${whereSql}
 
     GROUP BY
       p.product_id,
@@ -523,7 +659,7 @@ router.get("/:id", (req, res) => {
       b.slug
   `;
 
-  db.query(sql, [productId], (err, results) => {
+  db.query(sql, [value], (err, results) => {
     if (err) {
       return res.status(500).json({
         message: "Lỗi lấy chi tiết sản phẩm",
@@ -564,7 +700,7 @@ router.get("/:id", (req, res) => {
       ORDER BY pv.color ASC, pv.size ASC
     `;
 
-    db.query(variantSql, [productId], (err2, variantResults) => {
+    db.query(variantSql, [product.product_id], (err2, variantResults) => {
       if (err2) {
         return res.status(500).json({
           message: "Lỗi lấy biến thể sản phẩm",
@@ -578,6 +714,16 @@ router.get("/:id", (req, res) => {
       });
     });
   });
+};
+
+// Lấy chi tiết sản phẩm theo slug
+router.get("/slug/:slug", (req, res) => {
+  getProductDetail("p.slug = ?", req.params.slug, res);
+});
+
+// Lấy chi tiết sản phẩm theo id
+router.get("/:id", (req, res) => {
+  getProductDetail("p.product_id = ?", req.params.id, res);
 });
 
 module.exports = router;

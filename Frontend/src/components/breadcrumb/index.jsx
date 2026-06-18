@@ -18,15 +18,13 @@ const breadcrumbMap = {
   register: "Đăng ký",
   news: "Tin tức",
   aboutus: "Giới thiệu",
-  contactus: "Liên hệ"
+  contactus: "Liên hệ",
 };
 
 function Breadcrumb({ productName }) {
   const location = useLocation();
 
-  const pathnames = location.pathname
-    .split("/")
-    .filter((item) => item);
+  const pathnames = location.pathname.split("/").filter((item) => item);
 
   return (
     <div className="breadcrumb">
@@ -34,21 +32,20 @@ function Breadcrumb({ productName }) {
         <Link to="/">Trang chủ</Link>
 
         {pathnames.map((value, index) => {
-          const to =
-            "/" +
-            pathnames.slice(0, index + 1).join("/");
+          const to = "/" + pathnames.slice(0, index + 1).join("/");
 
-          const isLast =
-            index === pathnames.length - 1;
+          const isLast = index === pathnames.length - 1;
 
-          let label =
-            breadcrumbMap[value] || value;
+          let label = breadcrumbMap[value] || value;
 
-          if (
-            isLast &&
-            productName &&
-            /^\d+$/.test(value)
-          ) {
+          // if (
+          //   isLast &&
+          //   productName &&
+          //   /^\d+$/.test(value)
+          // ) {
+          //   label = productName;
+          // }
+          if (isLast && productName && pathnames[0] === "products") {
             label = productName;
           }
 
@@ -56,9 +53,7 @@ function Breadcrumb({ productName }) {
             <span key={to}>
               <i className="fa fa-angle-right"></i>
 
-              <Link to={to}>
-                {label}
-              </Link>
+              <Link to={to}>{label}</Link>
             </span>
           );
         })}

@@ -6,7 +6,8 @@ import Toast from "../../components/Toast";
 import "./style.scss";
 
 function ProductDetailPage() {
-  const { id } = useParams();
+  // const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
@@ -24,7 +25,8 @@ function ProductDetailPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/products/${id}`)
+      // .get(`http://localhost:5000/api/products/${id}`)
+      .get(`http://localhost:5000/api/products/slug/${slug}`)
       .then((res) => {
         setProduct(res.data);
 
@@ -36,7 +38,7 @@ function ProductDetailPage() {
         }
       })
       .catch((err) => console.log("Lỗi lấy chi tiết:", err));
-  }, [id]);
+  }, [slug]);
 
   if (!product) return <p className="loading">Đang tải sản phẩm...</p>;
 
@@ -249,10 +251,10 @@ function ProductDetailPage() {
           )}
 
           {sizes.length > 0 && (
-            <div className="option-box">
+            <div className="option-box size-option-box">
               <h3>Chọn size:</h3>
 
-              <div className="option-grid">
+              <div className="size-grid">
                 {sizes.map((size) => {
                   const variant = variants.find(
                     (item) =>
@@ -262,7 +264,7 @@ function ProductDetailPage() {
                   return (
                     <button
                       key={size}
-                      className={selectedSize === size ? "active" : ""}
+                      className={`size-btn ${selectedSize === size ? "active" : ""}`}
                       disabled={variant && Number(variant.stock) <= 0}
                       onClick={() => {
                         setSelectedSize(size);
