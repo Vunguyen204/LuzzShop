@@ -57,6 +57,7 @@ router.post("/", (req, res) => {
             product_id,
             variant_id,
             product_name,
+            sku,
             image_url,
             color,
             size,
@@ -81,51 +82,35 @@ router.post("/", (req, res) => {
             return new Promise((resolve, reject) => {
               const quantity = Number(item.quantity);
 
-              if (item.variant_id) {
-                const updateVariantStockSql = `
-                  UPDATE product_variants
-                  SET stock = stock - ?
-                  WHERE variant_id = ? AND stock >= ?
-                `;
-
-                db.query(
-                  updateVariantStockSql,
-                  [quantity, item.variant_id, quantity],
-                  (err3, stockResult) => {
-                    if (err3) return reject(err3);
-
-                    if (stockResult.affectedRows === 0) {
-                      return reject(
-                        new Error(`${item.product_name} không đủ tồn kho`)
-                      );
-                    }
-
-                    resolve();
-                  }
-                );
-              } else {
-                const updateProductStockSql = `
-                  UPDATE products
-                  SET stock = stock - ?
-                  WHERE product_id = ? AND stock >= ?
-                `;
-
-                db.query(
-                  updateProductStockSql,
-                  [quantity, item.product_id, quantity],
-                  (err3, stockResult) => {
-                    if (err3) return reject(err3);
-
-                    if (stockResult.affectedRows === 0) {
-                      return reject(
-                        new Error(`${item.product_name} không đủ tồn kho`)
-                      );
-                    }
-
-                    resolve();
-                  }
+              if (!item.variant_id) {
+                return reject(
+                  new Error(
+                    `${item.product_name} chưa có biến thể để trừ tồn kho`,
+                  ),
                 );
               }
+
+              const updateVariantStockSql = `
+      UPDATE product_variants
+      SET stock = stock - ?
+      WHERE variant_id = ? AND stock >= ?
+    `;
+
+              db.query(
+                updateVariantStockSql,
+                [quantity, item.variant_id, quantity],
+                (err3, stockResult) => {
+                  if (err3) return reject(err3);
+
+                  if (stockResult.affectedRows === 0) {
+                    return reject(
+                      new Error(`${item.product_name} không đủ tồn kho`),
+                    );
+                  }
+
+                  resolve();
+                },
+              );
             });
           });
 
@@ -155,7 +140,7 @@ router.post("/", (req, res) => {
               });
             });
         });
-      }
+      },
     );
   });
 });

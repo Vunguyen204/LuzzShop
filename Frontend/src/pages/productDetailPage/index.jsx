@@ -57,9 +57,7 @@ function ProductDetailPage() {
     ),
   ];
 
-  const currentStock = selectedVariant
-    ? Number(selectedVariant.stock)
-    : Number(product.stock);
+  const currentStock = Number(selectedVariant?.stock || 0);
 
   const currentImage = selectedVariant?.image_url || product.image_url;
   const currentSku = product.sku || `SP${product.product_id}`;

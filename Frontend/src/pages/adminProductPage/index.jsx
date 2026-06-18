@@ -12,6 +12,7 @@ const AdminProductPage = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [sortType, setSortType] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+
   const navigate = useNavigate();
 
   const [isShowForm, setIsShowForm] = useState(false);
@@ -26,7 +27,6 @@ const AdminProductPage = () => {
     description: "",
     price: "",
     old_price: "",
-    stock: "",
     image_url: "",
   });
 
@@ -65,7 +65,6 @@ const AdminProductPage = () => {
       description: "",
       price: "",
       old_price: "",
-      stock: "",
       image_url: "",
     });
 
@@ -100,7 +99,6 @@ const AdminProductPage = () => {
       description: product.description || "",
       price: product.price,
       old_price: product.old_price || "",
-      stock: product.stock,
       image_url: product.image_url?.split("/").pop() || "",
     });
   };
@@ -124,7 +122,6 @@ const AdminProductPage = () => {
         const uploadData = new FormData();
         uploadData.append("brand_slug", brand.slug);
         uploadData.append("image", selectedFile);
-        // console.log("brand_slug:", brand.slug);
 
         const uploadRes = await axios.post(
           "http://localhost:5000/api/products/upload",
@@ -199,11 +196,15 @@ const AdminProductPage = () => {
       break;
 
     case "stock_asc":
-      filteredProducts.sort((a, b) => Number(a.stock) - Number(b.stock));
+      filteredProducts.sort(
+        (a, b) => Number(a.total_stock) - Number(b.total_stock),
+      );
       break;
 
     case "stock_desc":
-      filteredProducts.sort((a, b) => Number(b.stock) - Number(a.stock));
+      filteredProducts.sort(
+        (a, b) => Number(b.total_stock) - Number(a.total_stock),
+      );
       break;
 
     default:
@@ -224,6 +225,7 @@ const AdminProductPage = () => {
           </button>
         )}
       </div>
+
       <div className="admin-stats">
         <div className="admin-stats__card">
           <h4>Tổng sản phẩm</h4>
@@ -232,7 +234,7 @@ const AdminProductPage = () => {
 
         <div className="admin-stats__card">
           <h4>Hết hàng</h4>
-          <p>{products.filter((p) => Number(p.stock) <= 0).length}</p>
+          <p>{products.filter((p) => Number(p.total_stock) <= 0).length}</p>
         </div>
 
         <div className="admin-stats__card">
@@ -287,6 +289,7 @@ const AdminProductPage = () => {
           <option value="stock_desc">Tồn kho nhiều nhất</option>
           <option value="stock_asc">Tồn kho ít nhất</option>
         </select>
+
         <button
           className="admin-product-page__toolbar__reset"
           onClick={() => {
@@ -415,16 +418,6 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Tồn kho</label>
-                <input
-                  type="number"
-                  name="stock"
-                  value={formData.stock}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="admin-form__row">
                 <label>Ảnh sản phẩm</label>
 
                 <div>
@@ -489,6 +482,7 @@ const AdminProductPage = () => {
           {filteredProducts.map((product) => (
             <tr key={product.product_id}>
               <td>{product.product_id}</td>
+
               <td>
                 {product.image_url && (
                   <img
@@ -498,16 +492,20 @@ const AdminProductPage = () => {
                   />
                 )}
               </td>
+
               <td>{product.product_name}</td>
               <td>{product.category_name}</td>
               <td>{product.brand_name}</td>
               <td>{Number(product.price).toLocaleString()}đ</td>
+
               <td>
                 {product.old_price
                   ? `${Number(product.old_price).toLocaleString()}đ`
                   : "-"}
               </td>
-              <td>{product.stock}</td>
+
+              <td>{product.total_stock}</td>
+
               <td>
                 <div className="admin-actions">
                   <button

@@ -12,10 +12,12 @@ router.get("/", (req, res) => {
       p.brand_id,
       p.product_name,
       p.slug,
+      p.sku,
       p.description,
       p.price,
       p.old_price,
-      p.stock,
+
+      COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
         '/uploads/products/',
@@ -35,6 +37,25 @@ router.get("/", (req, res) => {
       ON p.category_id = c.category_id
     LEFT JOIN brands b
       ON p.brand_id = b.brand_id
+    LEFT JOIN product_variants pv
+      ON p.product_id = pv.product_id
+
+    GROUP BY
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.image_url,
+      c.category_name,
+      c.slug,
+      b.brand_name,
+      b.slug
+
     ORDER BY p.product_id DESC
   `;
 
@@ -63,7 +84,8 @@ router.get("/featured", (req, res) => {
       p.description,
       p.price,
       p.old_price,
-      p.stock,
+
+      COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
         '/uploads/products/',
@@ -83,6 +105,24 @@ router.get("/featured", (req, res) => {
       ON p.category_id = c.category_id
     LEFT JOIN brands b
       ON p.brand_id = b.brand_id
+    LEFT JOIN product_variants pv
+      ON p.product_id = pv.product_id
+
+    GROUP BY
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.image_url,
+      c.category_name,
+      c.slug,
+      b.brand_name,
+      b.slug
 
     ORDER BY p.product_id DESC
     LIMIT 8
@@ -100,6 +140,7 @@ router.get("/featured", (req, res) => {
   });
 });
 
+// Lấy sản phẩm theo danh mục
 router.get("/category/:slug", (req, res) => {
   const { slug } = req.params;
 
@@ -114,7 +155,8 @@ router.get("/category/:slug", (req, res) => {
       p.description,
       p.price,
       p.old_price,
-      p.stock,
+
+      COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
         '/uploads/products/',
@@ -134,7 +176,27 @@ router.get("/category/:slug", (req, res) => {
       ON p.category_id = c.category_id
     LEFT JOIN brands b
       ON p.brand_id = b.brand_id
+    LEFT JOIN product_variants pv
+      ON p.product_id = pv.product_id
+
     WHERE c.slug = ?
+
+    GROUP BY
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.image_url,
+      c.category_name,
+      c.slug,
+      b.brand_name,
+      b.slug
+
     ORDER BY p.product_id DESC
   `;
 
@@ -150,6 +212,7 @@ router.get("/category/:slug", (req, res) => {
   });
 });
 
+// Thêm sản phẩm
 router.post("/", (req, res) => {
   const {
     category_id,
@@ -160,7 +223,6 @@ router.post("/", (req, res) => {
     description,
     price,
     old_price,
-    stock,
     image_url,
   } = req.body;
 
@@ -175,10 +237,9 @@ router.post("/", (req, res) => {
       description,
       price,
       old_price,
-      stock,
       image_url
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.query(
@@ -192,7 +253,6 @@ router.post("/", (req, res) => {
       description,
       price,
       old_price || null,
-      stock,
       image_url,
     ],
     (err) => {
@@ -206,10 +266,11 @@ router.post("/", (req, res) => {
       res.json({
         message: "Thêm sản phẩm thành công",
       });
-    },
+    }
   );
 });
 
+// Upload ảnh sản phẩm
 router.post("/upload", upload.single("image"), (req, res) => {
   const brandSlug = req.body.brand_slug;
 
@@ -231,6 +292,7 @@ router.post("/upload", upload.single("image"), (req, res) => {
   });
 });
 
+// Cập nhật sản phẩm
 router.put("/:id", (req, res) => {
   const { id } = req.params;
 
@@ -243,7 +305,6 @@ router.put("/:id", (req, res) => {
     description,
     price,
     old_price,
-    stock,
     image_url,
   } = req.body;
 
@@ -258,7 +319,6 @@ router.put("/:id", (req, res) => {
       description = ?,
       price = ?,
       old_price = ?,
-      stock = ?,
       image_url = ?
     WHERE product_id = ?
   `;
@@ -274,7 +334,6 @@ router.put("/:id", (req, res) => {
       description,
       price,
       old_price || null,
-      stock,
       image_url,
       id,
     ],
@@ -289,28 +348,43 @@ router.put("/:id", (req, res) => {
       res.json({
         message: "Cập nhật sản phẩm thành công",
       });
-    },
+    }
   );
 });
 
+// Xóa sản phẩm
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
 
-  const sql = `
+  const deleteVariantSql = `
+    DELETE FROM product_variants
+    WHERE product_id = ?
+  `;
+
+  const deleteProductSql = `
     DELETE FROM products
     WHERE product_id = ?
   `;
 
-  db.query(sql, [id], (err) => {
+  db.query(deleteVariantSql, [id], (err) => {
     if (err) {
       return res.status(500).json({
-        message: "Lỗi xóa sản phẩm",
+        message: "Lỗi xóa biến thể sản phẩm",
         error: err,
       });
     }
 
-    res.json({
-      message: "Xóa sản phẩm thành công",
+    db.query(deleteProductSql, [id], (err2) => {
+      if (err2) {
+        return res.status(500).json({
+          message: "Lỗi xóa sản phẩm",
+          error: err2,
+        });
+      }
+
+      res.json({
+        message: "Xóa sản phẩm thành công",
+      });
     });
   });
 });
@@ -330,7 +404,8 @@ router.get("/search/:keyword", (req, res) => {
       p.description,
       p.price,
       p.old_price,
-      p.stock,
+
+      COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
         '/uploads/products/',
@@ -350,12 +425,30 @@ router.get("/search/:keyword", (req, res) => {
       ON p.brand_id = b.brand_id
     LEFT JOIN categories c
       ON p.category_id = c.category_id
+    LEFT JOIN product_variants pv
+      ON p.product_id = pv.product_id
 
     WHERE
       p.product_name LIKE ?
       OR p.sku LIKE ?
       OR b.brand_name LIKE ?
       OR c.category_name LIKE ?
+
+    GROUP BY
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.image_url,
+      c.category_name,
+      c.slug,
+      b.brand_name,
+      b.slug
 
     ORDER BY p.product_name ASC
   `;
@@ -387,7 +480,8 @@ router.get("/:id", (req, res) => {
       p.description,
       p.price,
       p.old_price,
-      p.stock,
+
+      COALESCE(SUM(pv.stock), 0) AS total_stock,
 
       CONCAT(
         '/uploads/products/',
@@ -407,8 +501,26 @@ router.get("/:id", (req, res) => {
       ON p.category_id = c.category_id
     LEFT JOIN brands b
       ON p.brand_id = b.brand_id
+    LEFT JOIN product_variants pv
+      ON p.product_id = pv.product_id
 
     WHERE p.product_id = ?
+
+    GROUP BY
+      p.product_id,
+      p.category_id,
+      p.brand_id,
+      p.product_name,
+      p.slug,
+      p.sku,
+      p.description,
+      p.price,
+      p.old_price,
+      p.image_url,
+      c.category_name,
+      c.slug,
+      b.brand_name,
+      b.slug
   `;
 
   db.query(sql, [productId], (err, results) => {
