@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
@@ -85,6 +86,56 @@ function ProductCard({ product, showToast }) {
   const isSale =
     product.old_price && Number(product.old_price) > Number(product.price);
 
+  const [isLiked, setIsLiked] = useState(false);
+  useEffect(() => {
+    const checkWishlist = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (!user) return;
+
+      const res = await axios.get(
+        `http://localhost:5000/api/wishlist/check/${user.user_id}/${product.product_id}`,
+      );
+
+      setIsLiked(res.data.liked);
+    };
+
+    checkWishlist();
+  }, [product.product_id]);
+  const handleAddWishlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      showToast("Vui lòng đăng nhập để thêm yêu thích", "error");
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await axios.delete(
+          `http://localhost:5000/api/wishlist/${user.user_id}/${product.product_id}`,
+        );
+
+        setIsLiked(false);
+        showToast("Đã xóa khỏi danh sách yêu thích", "success");
+      } else {
+        await axios.post("http://localhost:5000/api/wishlist", {
+          user_id: user.user_id,
+          product_id: product.product_id,
+        });
+
+        setIsLiked(true);
+        showToast("Đã thêm vào danh sách yêu thích", "success");
+      }
+    } catch (error) {
+      console.log("Lỗi wishlist:", error);
+      showToast("Cập nhật yêu thích thất bại", "error");
+    }
+  };
+
   return (
     <div className="product-card">
       {/* <Link to={`/products/${product.product_id}`}> */}
@@ -123,13 +174,23 @@ function ProductCard({ product, showToast }) {
         </div>
       </Link>
 
-      <button
-        className="add-cart-btn"
-        onClick={handleAddToCart}
-        disabled={Number(product.stock) <= 0}
-      >
-        {Number(product.stock) <= 0 ? "Hết hàng" : "Thêm vào giỏ hàng"}
-      </button>
+      <div className="product-card__actions">
+        <button
+          className="product-card__actions__add-cart-btn"
+          onClick={handleAddToCart}
+          disabled={Number(product.total_stock) <= 0}
+        >
+          {Number(product.total_stock) <= 0 ? "Hết hàng" : "Thêm vào giỏ hàng"}
+        </button>
+
+        <button
+          className="product-card__actions__wishlist-btn"
+          onClick={handleAddWishlist}
+          title="Thêm vào yêu thích"
+        >
+          <i className={`fa-${isLiked ? "solid" : "regular"} fa-heart`}></i>
+        </button>
+      </div>
     </div>
   );
 }

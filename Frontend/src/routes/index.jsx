@@ -10,6 +10,7 @@ import ProfilePage from "../pages/profilePage";
 import NewsPage from "../pages/newsPage";
 import AboutUsPage from "../pages/aboutUsPage";
 import ContactUsPage from "../pages/contactUsPage";
+import WishListPage from "../pages/wishListPage";
 
 import DashBoardPage from "../pages/adminDashBoardPage";
 import AdminMenuPage from "../pages/adminMenuPage";
@@ -36,6 +37,7 @@ export const ROUTERS = {
     NEWS: "/news",
     ABOUTUS: "/aboutus",
     CONTACTUS: "/contactus",
+    WISHLIST: "/wishlist",
   },
 
   ADMIN: {
@@ -102,6 +104,10 @@ export const userRoutes = [
   {
     path: ROUTERS.USER.CONTACTUS,
     component: ContactUsPage,
+  },
+  {
+    path: ROUTERS.USER.WISHLIST,
+    component: WishListPage,
   },
 ];
 
