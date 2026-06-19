@@ -60,15 +60,15 @@ router.put("/:id/role", (req, res) => {
 
 router.put("/:id", (req, res) => {
   const { id } = req.params;
-  const { full_name, email, phone, address, role_id } = req.body;
+  const { full_name, phone, address } = req.body;
 
   const sql = `
     UPDATE users
-    SET full_name = ?, email = ?, phone = ?, address = ?, role_id = ?
+    SET full_name = ?, phone = ?, address = ?
     WHERE user_id = ?
   `;
 
-  db.query(sql, [full_name, email, phone, address, role_id, id], (err) => {
+  db.query(sql, [full_name, phone, address, id], (err) => {
     if (err) {
       return res.status(500).json({
         message: "Lỗi cập nhật người dùng",

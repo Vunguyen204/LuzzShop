@@ -8,7 +8,7 @@ function CategorySection() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/categories")
+      .get("http://localhost:5000/api/categories/parents")
       .then((res) => setCategories(res.data))
       .catch((err) => console.log(err));
   }, []);

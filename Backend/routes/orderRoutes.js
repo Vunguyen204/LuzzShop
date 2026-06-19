@@ -51,7 +51,7 @@ router.post("/", (req, res) => {
         ]);
 
         const itemSql = `
-          INSERT INTO order_items
+          INSERT INTO order_details
           (
             order_id,
             product_id,
@@ -202,7 +202,7 @@ router.get("/:id", (req, res) => {
 
   const itemSql = `
     SELECT *
-    FROM order_items
+    FROM order_details
     WHERE order_id = ?
   `;
 
@@ -222,6 +222,69 @@ router.get("/:id", (req, res) => {
         order: orderResults[0],
         items: itemResults,
       });
+    });
+  });
+});
+
+router.get("/:id/detail", (req, res) => {
+  const { id } = req.params;
+
+  const sql = `
+    SELECT
+      od.order_detail_id,
+      od.order_id,
+      od.product_id,
+      od.quantity,
+      od.price,
+      p.product_name,
+      p.image_url,
+      b.slug AS brand_slug
+    FROM order_details od
+    JOIN products p ON od.product_id = p.product_id
+    LEFT JOIN brands b ON p.brand_id = b.brand_id
+    WHERE od.order_id = ?
+  `;
+
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi lấy chi tiết đơn hàng",
+        error: err,
+      });
+    }
+
+    res.json(results);
+  });
+});
+
+router.patch("/:id/cancel", (req, res) => {
+  const { id } = req.params;
+  const { user_id } = req.body;
+
+  const sql = `
+    UPDATE orders
+    SET status = 'Cancelled'
+    WHERE order_id = ?
+      AND user_id = ?
+      AND status = 'Pending'
+  `;
+
+  db.query(sql, [id, user_id], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Lỗi hủy đơn hàng",
+        error: err,
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        message: "Chỉ được hủy đơn hàng khi đơn chưa xác nhận",
+      });
+    }
+
+    res.json({
+      message: "Hủy đơn hàng thành công",
     });
   });
 });

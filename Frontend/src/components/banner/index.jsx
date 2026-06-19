@@ -14,7 +14,7 @@ function Banner() {
         </h1>
 
         <p>
-          Khám phá các mẫu vợt, giày và phụ kiện Pickleball mới nhất
+          Khám phá các mẫu vợt, giày, trang phục và phụ kiện Pickleball mới nhất
           dành cho người mới bắt đầu và vận động viên chuyên nghiệp.
         </p>
 

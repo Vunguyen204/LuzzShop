@@ -254,7 +254,7 @@ const AdminOrderPage = () => {
 
                 <tbody>
                   {orderItems.map((item) => (
-                    <tr key={item.order_item_id}>
+                    <tr key={item.order_detail_id}>
                       <td>
                         {item.image_url && (
                           <img

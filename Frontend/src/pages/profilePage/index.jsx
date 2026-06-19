@@ -7,6 +7,42 @@ const ProfilePage = () => {
     const currentUser = localStorage.getItem("user");
     return currentUser ? JSON.parse(currentUser) : null;
   });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: user?.full_name || user?.name || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/users/${user.user_id}`,
+        formData,
+      );
+
+      const newUser = {
+        ...user,
+        ...formData,
+      };
+
+      localStorage.setItem("user", JSON.stringify(newUser));
+      alert("Cập nhật thông tin thành công");
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+      console.log(error.response?.data);
+      alert(error.response?.data?.message || "Cập nhật thông tin thất bại");
+    }
+  };
   const getStatusText = (status) => {
     switch (status) {
       case "Pending":
@@ -29,6 +65,47 @@ const ProfilePage = () => {
     }
   };
   const [orders, setOrders] = useState([]);
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const handleViewOrder = async (order) => {
+    try {
+      setSelectedOrder(order);
+
+      const res = await axios.get(
+        `http://localhost:5000/api/orders/${order.order_id}/detail`,
+      );
+
+      setOrderDetails(res.data);
+    } catch (error) {
+      console.log("Lỗi lấy chi tiết đơn hàng:", error);
+    }
+  };
+
+  const handleCancelOrder = async (order) => {
+    if (!window.confirm("Bạn có chắc muốn hủy đơn hàng này không?")) return;
+
+    try {
+      await axios.patch(
+        `http://localhost:5000/api/orders/${order.order_id}/cancel`,
+        {
+          user_id: user.user_id,
+        },
+      );
+
+      alert("Hủy đơn hàng thành công");
+
+      setOrders((prev) =>
+        prev.map((item) =>
+          item.order_id === order.order_id
+            ? { ...item, status: "Cancelled" }
+            : item,
+        ),
+      );
+    } catch (error) {
+      alert(error.response?.data?.message || "Hủy đơn hàng thất bại");
+    }
+  };
 
   useEffect(() => {
     if (!user?.user_id) return;
@@ -52,22 +129,57 @@ const ProfilePage = () => {
           <div className="customer-info">
             <h3>THÔNG TIN KHÁCH HÀNG</h3>
 
-            <p>
-              <i className="fa-solid fa-user"></i>
-              <strong> Họ tên:</strong> {user?.full_name || user?.name}
-            </p>
+            {isEditing ? (
+              <>
+                <input
+                  type="text"
+                  name="full_name"
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  placeholder="Họ tên"
+                />
 
-            <p>
-              <i className="fa-solid fa-phone"></i>
-              <strong> Số ĐT:</strong> {user?.phone}
-            </p>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Số điện thoại"
+                />
 
-            <p>
-              <i className="fa-solid fa-location-dot"></i>
-              <strong> Địa chỉ:</strong> {user?.address || ""}
-            </p>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Địa chỉ"
+                />
 
-            <button>SỬA THÔNG TIN</button>
+                <button onClick={handleUpdateProfile}>LƯU THÔNG TIN</button>
+                <button onClick={() => setIsEditing(false)}>HỦY</button>
+              </>
+            ) : (
+              <>
+                <p>
+                  <i className="fa-solid fa-user"></i>
+                  <strong> Họ tên:</strong> {user?.full_name || user?.name}
+                </p>
+
+                <p>
+                  <i className="fa-solid fa-phone"></i>
+                  <strong> Số ĐT:</strong> {user?.phone}
+                </p>
+
+                <p>
+                  <i className="fa-solid fa-location-dot"></i>
+                  <strong> Địa chỉ:</strong> {user?.address || ""}
+                </p>
+
+                <button onClick={() => setIsEditing(true)}>
+                  SỬA THÔNG TIN
+                </button>
+              </>
+            )}
           </div>
 
           <div className="order-info">
@@ -81,6 +193,7 @@ const ProfilePage = () => {
                   <th>Địa chỉ</th>
                   <th>Giá trị</th>
                   <th>Tình trạng</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
 
@@ -99,17 +212,112 @@ const ProfilePage = () => {
                           {getStatusText(order.status)}
                         </span>
                       </td>
+                      <td>
+                        <div className="order-actions">
+                          <button
+                            className="btn-view-order"
+                            onClick={() => handleViewOrder(order)}
+                          >
+                            Xem
+                          </button>
+
+                          {order.status === "Pending" && (
+                            <button
+                              className="btn-cancel-order"
+                              onClick={() => handleCancelOrder(order)}
+                            >
+                              Hủy
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="empty-order">
+                    <td colSpan="6" className="empty-order">
                       Không có đơn hàng nào.
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+            {selectedOrder && (
+              <div className="order-detail-modal">
+                <div className="order-detail-modal__content">
+                  <button
+                    className="order-detail-modal__close"
+                    onClick={() => {
+                      setSelectedOrder(null);
+                      setOrderDetails([]);
+                    }}
+                  >
+                    ×
+                  </button>
+
+                  <h3>CHI TIẾT ĐƠN HÀNG #{selectedOrder.order_id}</h3>
+
+                  <p>
+                    <strong>Người đặt:</strong>{" "}
+                    {user?.full_name || user?.name}{" "}
+                  </p>
+                  <p>
+                    <strong>Số điện thoại:</strong> {user?.phone}
+                  </p>
+                  <p>
+                    <strong>Địa chỉ:</strong> {selectedOrder.shipping_address}
+                  </p>
+                  <p>
+                    <strong>Ngày đặt:</strong>{" "}
+                    {new Date(selectedOrder.order_date).toLocaleDateString()}
+                  </p>
+
+                  <p>
+                    <strong>Trạng thái:</strong>{" "}
+                    {getStatusText(selectedOrder.status)}
+                  </p>
+
+                  <table className="order-detail-table">
+                    <thead>
+                      <tr>
+                        <th>Ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th>SL</th>
+                        <th>Giá</th>
+                        <th>Tạm tính</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {orderDetails.map((item) => (
+                        <tr key={item.order_detail_id}>
+                          <td>
+                            <img
+                              src={`http://localhost:5000/uploads/products/${item.brand_slug}/${item.image_url}`}
+                              alt={item.product_name}
+                            />
+                          </td>
+                          <td>{item.product_name}</td>
+                          <td>{item.quantity}</td>
+                          <td>{Number(item.price).toLocaleString()}đ</td>
+                          <td>
+                            {(
+                              Number(item.price) * Number(item.quantity)
+                            ).toLocaleString()}
+                            đ
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <h4>
+                    Tổng tiền:{" "}
+                    {Number(selectedOrder.total_amount).toLocaleString()}đ
+                  </h4>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
