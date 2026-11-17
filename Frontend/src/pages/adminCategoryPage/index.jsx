@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
+import AdminButton from "../../components/adminButton";
 import "./style.scss";
 
 const AdminCategoryPage = () => {
@@ -14,6 +15,7 @@ const AdminCategoryPage = () => {
     status: 1,
   });
   const [editingId, setEditingId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -59,6 +61,7 @@ const AdminCategoryPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
 
     try {
       if (editingId) {
@@ -77,6 +80,8 @@ const AdminCategoryPage = () => {
     } catch (error) {
       console.log("Lỗi lưu danh mục:", error);
       alert("Lưu danh mục thất bại");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -113,28 +118,31 @@ const AdminCategoryPage = () => {
         <h2>Quản lý Danh mục</h2>
 
         {!isShowForm && (
-          <button
-            className="admin-category-page__btn-add"
+          <AdminButton
+            variant="primary"
+            icon="fa-plus"
             onClick={handleShowAddForm}
           >
             Thêm danh mục
-          </button>
+          </AdminButton>
         )}
       </div>
 
       {isShowForm && (
-        <div className="admin-modal">
-          <div className="admin-modal__content">
+        <div className="admin-modal" role="presentation">
+          <div className="admin-modal__content" role="dialog" aria-modal="true" aria-label="Biểu mẫu danh mục">
             <div className="admin-modal__header">
               <h3>{editingId ? "Cập nhật Danh mục" : "Thêm Danh mục"}</h3>
 
-              <button
-                className="admin-modal__close"
+              <AdminButton
+                icon="fa-xmark"
+                iconOnly
+                variant="ghost"
                 onClick={resetForm}
-                type="button"
+                aria-label="Đóng biểu mẫu"
+                title="Đóng"
               >
-                ×
-              </button>
+              </AdminButton>
             </div>
 
             <form className="admin-form" onSubmit={handleSubmit}>
@@ -212,17 +220,17 @@ const AdminCategoryPage = () => {
               </div>
 
               <div className="admin-form__actions">
-                <button className="admin-category-page__btn-add" type="submit">
+                <AdminButton variant="primary" icon="fa-floppy-disk" type="submit" loading={isSaving}>
                   {editingId ? "Cập nhật" : "Lưu danh mục"}
-                </button>
+                </AdminButton>
 
-                <button
-                  type="button"
-                  className="admin-category-page__btn-cancel"
+                <AdminButton
+                  variant="secondary"
+                  icon="fa-xmark"
                   onClick={resetForm}
                 >
                   Hủy
-                </button>
+                </AdminButton>
               </div>
             </form>
           </div>
@@ -258,6 +266,7 @@ const AdminCategoryPage = () => {
         </div> */}
       </div>
 
+      <div className="admin-table-wrap">
       <table className="admin-table">
         <thead>
           <tr>
@@ -296,25 +305,32 @@ const AdminCategoryPage = () => {
 
               <td>
                 <div className="admin-actions">
-                  <button
-                    className="admin-actions__edit"
+                  <AdminButton
+                    variant="secondary"
+                    size="sm"
+                    icon="fa-pen"
                     onClick={() => handleEdit(category)}
+                    aria-label={`Sửa danh mục ${category.category_name}`}
                   >
                     Sửa
-                  </button>
+                  </AdminButton>
 
-                  <button
-                    className="admin-actions__delete"
+                  <AdminButton
+                    variant="danger"
+                    size="sm"
+                    icon="fa-trash-can"
                     onClick={() => handleDelete(category.category_id)}
+                    aria-label={`Xóa danh mục ${category.category_name}`}
                   >
                     Xóa
-                  </button>
+                  </AdminButton>
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

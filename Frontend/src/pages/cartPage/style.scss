@@ -2,6 +2,34 @@
     background: #fff;
 }
 
+@media (max-width: 900px) {
+    .cart-container {
+        margin: 28px var(--page-gutter);
+        overflow-x: auto;
+    }
+
+    .cart-table {
+        min-width: 760px;
+    }
+
+    .cart-summary {
+        min-width: 0;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 520px) {
+    .cart-summary {
+        align-items: stretch;
+        flex-direction: column;
+        text-align: right;
+
+        .checkout-btn {
+            text-align: center;
+        }
+    }
+}
+
 .cart-container {
     max-width: 1200px;
     margin: 35px auto;

@@ -31,6 +31,16 @@
   }
 }
 
+@media (max-width: 520px) {
+  .toast {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
 .toast-icon {
   width: 26px;
   height: 26px;

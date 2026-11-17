@@ -1,5 +1,5 @@
 .news-page {
-  padding: 35x 0 80px;
+  padding: 35px 0 80px;
 
   .container {
     max-width: 1320px;
@@ -67,5 +67,17 @@
         cursor: pointer;
       }
     }
+  }
+}
+
+@media (max-width: 900px) {
+  .news-page .news-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .news-page .news-grid {
+    grid-template-columns: 1fr;
   }
 }

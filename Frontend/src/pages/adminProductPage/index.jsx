@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import AdminButton from "../../components/adminButton";
 import "./style.scss";
 
 const AdminProductPage = () => {
@@ -12,6 +13,10 @@ const AdminProductPage = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [sortType, setSortType] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [updatingStatusId, setUpdatingStatusId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -31,8 +36,18 @@ const AdminProductPage = () => {
   });
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/api/products/admin");
-    setProducts(res.data);
+    setIsLoading(true);
+    setLoadError("");
+
+    try {
+      const res = await axios.get("http://localhost:5000/api/products/admin");
+      setProducts(res.data);
+    } catch (error) {
+      console.error("Không thể tải danh sách sản phẩm:", error);
+      setLoadError("Không thể tải danh sách sản phẩm. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchCategories = async () => {
@@ -105,6 +120,7 @@ const AdminProductPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
 
     try {
       let imageName = formData.image_url;
@@ -157,6 +173,8 @@ const AdminProductPage = () => {
     } catch (error) {
       console.log("Lỗi lưu sản phẩm:", error);
       alert("Lưu sản phẩm thất bại");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -175,6 +193,7 @@ const AdminProductPage = () => {
 
   const handleUpdateStatus = async (product) => {
     const newStatus = Number(product.status) === 1 ? 0 : 1;
+    setUpdatingStatusId(product.product_id);
 
     try {
       await axios.patch(
@@ -187,6 +206,8 @@ const AdminProductPage = () => {
     } catch (error) {
       console.log("Lỗi cập nhật trạng thái:", error);
       alert("Cập nhật trạng thái thất bại");
+    } finally {
+      setUpdatingStatusId(null);
     }
   };
 
@@ -231,31 +252,35 @@ const AdminProductPage = () => {
   return (
     <div className="admin-product-page">
       <div className="admin-product-page__header">
-        <h2>Quản lý sản phẩm</h2>
+        <div>
+          <h2>Danh sách sản phẩm</h2>
+          <p>Theo dõi thông tin, tồn kho và trạng thái kinh doanh.</p>
+        </div>
 
         {!isShowForm && (
-          <button
-            className="admin-product-page__btn-add"
+          <AdminButton
+            variant="primary"
+            icon="fa-plus"
             onClick={handleShowAddForm}
           >
             Thêm sản phẩm
-          </button>
+          </AdminButton>
         )}
       </div>
 
       <div className="admin-stats">
         <div className="admin-stats__card">
-          <h4>Tổng sản phẩm</h4>
+          <span className="admin-stats__label">Tổng sản phẩm</span>
           <p>{products.length}</p>
         </div>
 
         <div className="admin-stats__card">
-          <h4>Hết hàng</h4>
+          <span className="admin-stats__label">Hết hàng</span>
           <p>{products.filter((p) => Number(p.total_stock) <= 0).length}</p>
         </div>
 
         <div className="admin-stats__card">
-          <h4>Đang giảm giá</h4>
+          <span className="admin-stats__label">Đang giảm giá</span>
           <p>
             {
               products.filter((p) => Number(p.old_price) > Number(p.price))
@@ -265,15 +290,20 @@ const AdminProductPage = () => {
         </div>
       </div>
 
-      <div className="admin-product-page__toolbar">
-        <input
-          type="text"
-          placeholder="Tìm sản phẩm..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="admin-product-page__toolbar" aria-label="Bộ lọc sản phẩm">
+        <label className="admin-product-page__search">
+          <span className="admin-visually-hidden">Tìm sản phẩm</span>
+          <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+          <input
+            type="search"
+            placeholder="Tìm theo tên sản phẩm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </label>
 
         <select
+          aria-label="Lọc theo danh mục"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -287,6 +317,7 @@ const AdminProductPage = () => {
         </select>
 
         <select
+          aria-label="Lọc theo thương hiệu"
           value={selectedBrand}
           onChange={(e) => setSelectedBrand(e.target.value)}
         >
@@ -299,7 +330,7 @@ const AdminProductPage = () => {
           ))}
         </select>
 
-        <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
+        <select aria-label="Sắp xếp sản phẩm" value={sortType} onChange={(e) => setSortType(e.target.value)}>
           <option value="">Sắp xếp</option>
           <option value="price_asc">Giá tăng dần</option>
           <option value="price_desc">Giá giảm dần</option>
@@ -307,8 +338,9 @@ const AdminProductPage = () => {
           <option value="stock_asc">Tồn kho ít nhất</option>
         </select>
 
-        <button
-          className="admin-product-page__toolbar__reset"
+        <AdminButton
+          variant="ghost"
+          icon="fa-rotate-left"
           onClick={() => {
             setSearchTerm("");
             setSelectedCategory("");
@@ -317,28 +349,31 @@ const AdminProductPage = () => {
           }}
         >
           Xóa bộ lọc
-        </button>
+        </AdminButton>
       </div>
 
       {isShowForm && (
-        <div className="admin-modal">
-          <div className="admin-modal__content">
+        <div className="admin-modal" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && resetForm()}>
+          <div className="admin-modal__content" role="dialog" aria-modal="true" aria-labelledby="product-form-title">
             <div className="admin-modal__header">
-              <h3>{editingId ? "Cập nhật sản phẩm" : "Thêm sản phẩm"}</h3>
+              <h3 id="product-form-title">{editingId ? "Cập nhật sản phẩm" : "Thêm sản phẩm"}</h3>
 
-              <button
-                type="button"
-                className="admin-modal__close"
+              <AdminButton
+                icon="fa-xmark"
+                iconOnly
+                variant="ghost"
                 onClick={resetForm}
+                aria-label="Đóng biểu mẫu"
+                title="Đóng"
               >
-                ×
-              </button>
+              </AdminButton>
             </div>
 
             <form className="admin-form" onSubmit={handleSubmit}>
               <div className="admin-form__row">
-                <label>Tên sản phẩm</label>
+                <label htmlFor="admin-product-name">Tên sản phẩm</label>
                 <input
+                  id="admin-product-name"
                   type="text"
                   name="product_name"
                   value={formData.product_name}
@@ -348,8 +383,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Slug</label>
+                <label htmlFor="admin-product-slug">Slug</label>
                 <input
+                  id="admin-product-slug"
                   type="text"
                   name="slug"
                   value={formData.slug}
@@ -358,8 +394,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>SKU</label>
+                <label htmlFor="admin-product-sku">SKU</label>
                 <input
+                  id="admin-product-sku"
                   type="text"
                   name="sku"
                   value={formData.sku}
@@ -368,8 +405,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Danh mục</label>
+                <label htmlFor="admin-product-category">Danh mục</label>
                 <select
+                  id="admin-product-category"
                   name="category_id"
                   value={formData.category_id}
                   onChange={handleChange}
@@ -388,8 +426,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Thương hiệu</label>
+                <label htmlFor="admin-product-brand">Thương hiệu</label>
                 <select
+                  id="admin-product-brand"
                   name="brand_id"
                   value={formData.brand_id}
                   onChange={handleChange}
@@ -405,8 +444,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Mô tả</label>
+                <label htmlFor="admin-product-description">Mô tả</label>
                 <textarea
+                  id="admin-product-description"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
@@ -414,8 +454,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Giá bán</label>
+                <label htmlFor="admin-product-price">Giá bán</label>
                 <input
+                  id="admin-product-price"
                   type="number"
                   name="price"
                   value={formData.price}
@@ -425,8 +466,9 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Giá cũ</label>
+                <label htmlFor="admin-product-old-price">Giá cũ</label>
                 <input
+                  id="admin-product-old-price"
                   type="number"
                   name="old_price"
                   value={formData.old_price}
@@ -435,10 +477,11 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__row">
-                <label>Ảnh sản phẩm</label>
+                <label htmlFor="admin-product-image">Ảnh sản phẩm</label>
 
                 <div>
                   <input
+                    id="admin-product-image"
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
@@ -463,23 +506,49 @@ const AdminProductPage = () => {
               </div>
 
               <div className="admin-form__actions">
-                <button className="admin-product-page__btn-add" type="submit">
+                <AdminButton
+                  variant="primary"
+                  icon="fa-floppy-disk"
+                  type="submit"
+                  loading={isSaving}
+                >
                   {editingId ? "Cập nhật" : "Lưu sản phẩm"}
-                </button>
+                </AdminButton>
 
-                <button
-                  type="button"
-                  className="admin-product-page__btn-cancel"
+                <AdminButton
+                  variant="secondary"
+                  icon="fa-xmark"
                   onClick={resetForm}
                 >
                   Hủy
-                </button>
+                </AdminButton>
               </div>
             </form>
           </div>
         </div>
       )}
 
+      <div className="admin-product-page__table-meta">
+        <span>Hiển thị <strong>{filteredProducts.length}</strong> / {products.length} sản phẩm</span>
+      </div>
+
+      <div className="admin-table-wrap">
+      {isLoading ? (
+        <div className="admin-loading-state" role="status">Đang tải danh sách sản phẩm...</div>
+      ) : loadError ? (
+        <div className="admin-error-state" role="alert">
+          <p>{loadError}</p>
+          <AdminButton variant="secondary" icon="fa-rotate-right" onClick={fetchProducts}>
+            Thử lại
+          </AdminButton>
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="admin-empty-state">
+          <i className="fa-regular fa-folder-open" aria-hidden="true" />
+          <h3>Không tìm thấy sản phẩm</h3>
+          <p>Hãy thay đổi bộ lọc hoặc thêm sản phẩm mới.</p>
+        </div>
+      ) : (
       <table className="admin-table">
         <thead>
           <tr>
@@ -507,6 +576,7 @@ const AdminProductPage = () => {
                     className="admin-table__image"
                     src={`http://localhost:5000${product.image_url}`}
                     alt={product.product_name}
+                    loading="lazy"
                   />
                 )}
               </td>
@@ -536,28 +606,38 @@ const AdminProductPage = () => {
               </td>
               <td>
                 <div className="admin-actions">
-                  <button
-                    className="admin-actions__edit"
+                  <AdminButton
+                    variant="secondary"
+                    size="sm"
+                    icon="fa-pen"
                     onClick={() => handleEdit(product)}
+                    aria-label={`Sửa ${product.product_name}`}
                   >
                     Sửa
-                  </button>
+                  </AdminButton>
 
-                  <button
-                    className="admin-actions__variant"
+                  <AdminButton
+                    variant="secondary"
+                    size="sm"
+                    icon="fa-layer-group"
                     onClick={() =>
                       navigate(`/admin/products/${product.product_id}/variants`)
                     }
+                    aria-label={`Quản lý biến thể của ${product.product_name}`}
                   >
                     Biến thể
-                  </button>
+                  </AdminButton>
 
-                  <button
-                    className="admin-actions__patch"
+                  <AdminButton
+                    variant={Number(product.status) === 1 ? "danger" : "primary"}
+                    size="sm"
+                    icon={Number(product.status) === 1 ? "fa-ban" : "fa-rotate-left"}
                     onClick={() => handleUpdateStatus(product)}
+                    loading={updatingStatusId === product.product_id}
+                    aria-label={`${Number(product.status) === 1 ? "Ngừng bán" : "Bán lại"} ${product.product_name}`}
                   >
                     {Number(product.status) === 1 ? "Ngừng bán" : "Bán lại"}
-                  </button>
+                  </AdminButton>
 
                   {/* <button
                     className="admin-actions__delete"
@@ -571,6 +651,8 @@ const AdminProductPage = () => {
           ))}
         </tbody>
       </table>
+      )}
+      </div>
     </div>
   );
 };

@@ -6,6 +6,31 @@
     gap: 35px;
 }
 
+@media (max-width: 900px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        margin: 28px var(--page-gutter);
+    }
+}
+
+@media (max-width: 520px) {
+    .checkout-form,
+    .order-summary {
+        padding: 18px 14px;
+    }
+
+    .order-item {
+        align-items: flex-start;
+
+        img {
+            width: 64px;
+            height: 64px;
+            flex: 0 0 auto;
+        }
+    }
+}
+
 .checkout-form,
 .order-summary {
     background: #fff;

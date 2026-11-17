@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
+import AdminButton from "../../components/adminButton";
 import "./style.scss";
 
 const AdminUserPage = () => {
@@ -12,6 +13,7 @@ const AdminUserPage = () => {
 
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -82,6 +84,7 @@ const AdminUserPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
 
     try {
       await axios.put(`http://localhost:5000/api/users/${editingId}`, formData);
@@ -92,6 +95,8 @@ const AdminUserPage = () => {
     } catch (error) {
       console.log("Lỗi cập nhật người dùng:", error);
       alert("Cập nhật người dùng thất bại");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -167,30 +172,33 @@ const AdminUserPage = () => {
           ))}
         </select>
 
-        <button
-          className="admin-user-page__toolbar__reset"
+        <AdminButton
+          variant="ghost"
+          icon="fa-rotate-left"
           onClick={() => {
             setSearchTerm("");
             setRoleFilter("");
           }}
         >
           Xóa bộ lọc
-        </button>
+        </AdminButton>
       </div>
 
       {isShowForm && (
-        <div className="admin-modal">
-          <div className="admin-modal__content">
+        <div className="admin-modal" role="presentation">
+          <div className="admin-modal__content" role="dialog" aria-modal="true" aria-label="Biểu mẫu người dùng">
             <div className="admin-modal__header">
               <h3>Cập nhật người dùng</h3>
 
-              <button
-                className="admin-modal__close"
+              <AdminButton
+                icon="fa-xmark"
+                iconOnly
+                variant="ghost"
                 onClick={resetForm}
-                type="button"
+                aria-label="Đóng biểu mẫu"
+                title="Đóng"
               >
-                ×
-              </button>
+              </AdminButton>
             </div>
 
             <form className="admin-form" onSubmit={handleSubmit}>
@@ -254,23 +262,24 @@ const AdminUserPage = () => {
               </div>
 
               <div className="admin-form__actions">
-                <button className="admin-user-page__btn-add" type="submit">
+                <AdminButton variant="primary" icon="fa-floppy-disk" type="submit" loading={isSaving}>
                   Cập nhật
-                </button>
+                </AdminButton>
 
-                <button
-                  type="button"
-                  className="admin-user-page__btn-cancel"
+                <AdminButton
+                  variant="secondary"
+                  icon="fa-xmark"
                   onClick={resetForm}
                 >
                   Hủy
-                </button>
+                </AdminButton>
               </div>
             </form>
           </div>
         </div>
       )}
 
+      <div className="admin-table-wrap">
       <table className="admin-table">
         <thead>
           <tr>
@@ -307,20 +316,26 @@ const AdminUserPage = () => {
               </td>
               <td>
                 <div className="admin-actions">
-                  <button
-                    className="admin-actions__edit"
+                  <AdminButton
+                    variant="secondary"
+                    size="sm"
+                    icon="fa-pen"
                     onClick={() => handleEdit(user)}
+                    aria-label={`Sửa người dùng ${user.full_name || user.email}`}
                   >
                     Sửa
-                  </button>
+                  </AdminButton>
 
                   {user.user_id !== currentUser?.user_id && (
-                    <button
-                      className="admin-actions__delete"
+                    <AdminButton
+                      variant="danger"
+                      size="sm"
+                      icon="fa-trash-can"
                       onClick={() => handleDelete(user.user_id)}
+                      aria-label={`Xóa người dùng ${user.full_name || user.email}`}
                     >
                       Xóa
-                    </button>
+                    </AdminButton>
                   )}
                 </div>
               </td>
@@ -328,6 +343,7 @@ const AdminUserPage = () => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

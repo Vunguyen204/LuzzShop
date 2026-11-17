@@ -1,210 +1,121 @@
 .admin-order-page {
-    width: 100%;
+  width: 100%;
 
-    &__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-
-        h2 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-    }
-
-    &__toolbar {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-
-        input,
-        select {
-            height: 42px;
-            padding: 0 14px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            font-size: 15px;
-
-            &:focus {
-                border-color: #00843d;
-                box-shadow: 0 0 0 2px rgba(0, 132, 61, 0.12);
-            }
-        }
-
-        input {
-            flex: 1;
-            min-width: 400px;
-        }
-
-        input::placeholder {
-            color: #999;
-        }
-
-        &__reset {
-            border: none;
-            background: #777;
-            color: #fff;
-            padding: 0 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-
-            &:hover {
-                background: #666;
-            }
-        }
-    }
+  &__toolbar input {
+    min-width: min(360px, 100%);
+  }
 }
 
 .admin-order-detail {
-    &__info {
-        background: #f8f9fa;
-        border: 1px solid #e5e5e5;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 18px;
+  &__info {
+    margin-bottom: 18px;
+    padding: 15px;
+    background: #f7faf8;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
 
-        p {
-            margin: 0 0 10px;
-            font-size: 15px;
-            color: #333;
+    p {
+      margin: 0 0 8px;
+      color: #3d4b43;
+      font-size: 13px;
 
-            &:last-child {
-                margin-bottom: 0;
-            }
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-            strong {
-                color: #004225;
-            }
-        }
+      strong {
+        color: var(--admin-text);
+      }
+    }
+  }
+
+  &__status {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    label {
+      color: var(--admin-text);
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    &__status {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-
-        label {
-            font-weight: 700;
-            color: #222;
-        }
-
-        select {
-            height: 40px;
-            min-width: 200px;
-            padding: 0 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-
-            &:focus {
-                border-color: #00843d;
-                box-shadow: 0 0 0 2px rgba(0, 132, 61, 0.12);
-            }
-        }
+    select {
+      min-width: 200px;
+      height: 40px;
+      padding: 0 11px;
+      border: 1px solid #cfd9d3;
+      border-radius: 8px;
+      background: #fff;
     }
+  }
 
-    h4 {
-        margin: 20px 0 12px;
-        font-size: 18px;
-        color: var(--primary-color);
-    }
+  h4 {
+    margin: 20px 0 10px;
+    color: var(--admin-text);
+    font-size: 16px;
+  }
 }
 
 .admin-items-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    overflow: hidden;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--admin-border);
 
-    thead {
-        background: var(--primary-color);
+  th,
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--admin-border);
+    color: #344239;
+    font-size: 12px;
+    text-align: left;
+  }
 
-        th {
-            color: #fff;
-            padding: 12px;
-            font-size: 14px;
-            text-align: left;
-        }
-    }
+  th {
+    background: #f7faf8;
+    color: #536158;
+  }
 
-    tbody {
-        tr {
-            border-bottom: 1px solid #eee;
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            td {
-                padding: 12px;
-                font-size: 14px;
-                color: #333;
-            }
-        }
-    }
-
-    img {
-        width: 55px;
-        height: 55px;
-        object-fit: contain;
-        border: 1px solid #eee;
-        border-radius: 6px;
-        background: #fff;
-        padding: 4px;
-        display: block;
-    }
+  img {
+    width: 50px;
+    height: 50px;
+    padding: 3px;
+    display: block;
+    object-fit: contain;
+    border: 1px solid var(--admin-border);
+    border-radius: 7px;
+  }
 }
 
-.admin-actions {
-    &__view {
-        border: none;
-        background: var(--primary-color);
-        color: #fff;
-        padding: 8px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        transition: 0.3s;
-
-        &:hover {
-            background: var(--primary-dark);
-        }
-    }
-}
-
-/* Trạng thái đơn hàng */
 .admin-status {
-    &--pending {
-        background: #fff3cd;
-        color: #856404;
-    }
+  &--pending { background: #fff4d6; color: #795900; }
+  &--confirmed { background: #e6f0ff; color: #174ea6; }
+  &--shipping { background: #e2f5f7; color: #12616a; }
+  &--completed { background: #e5f5ec; color: #126b3a; }
+  &--cancelled { background: #fbe9e7; color: #a52a20; }
+}
 
-    &--confirmed {
-        background: #cce5ff;
-        color: #004085;
+@media (max-width: 600px) {
+  .admin-order-page__toolbar {
+    input,
+    select,
+    button {
+      width: 100%;
+      min-width: 0;
     }
+  }
 
-    &--shipping {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
+  .admin-order-detail__status {
+    align-items: stretch;
+    flex-direction: column;
 
-    &--completed {
-        background: #d4edda;
-        color: #155724;
-    }
+    select { width: 100%; }
+  }
 
-    &--cancelled {
-        background: #f8d7da;
-        color: #721c24;
-    }
+  .admin-items-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

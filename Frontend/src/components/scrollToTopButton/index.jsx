@@ -19,20 +19,16 @@ function ScrollTopButton() {
   }, []);
 
   const scrollToTop = () => {
-    const scrollStep = -window.scrollY / 50;
-
-    const scrollInterval = setInterval(() => {
-      if (window.scrollY !== 0) {
-        window.scrollBy(0, scrollStep);
-      } else {
-        clearInterval(scrollInterval);
-      }
-    }, 10);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     visible && (
-      <button className="scroll-top-btn" onClick={scrollToTop}>
+      <button
+        className="scroll-top-btn"
+        onClick={scrollToTop}
+        aria-label="Cuộn lên đầu trang"
+      >
         <FontAwesomeIcon icon={faArrowUp} />
       </button>
     )

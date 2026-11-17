@@ -82,3 +82,18 @@
     }
   }
 }
+
+@media (max-width: 600px) {
+  .auth-page {
+    padding: 30px 16px;
+
+    .auth-box {
+      width: 100%;
+      padding: 22px 18px 32px;
+
+      h2 {
+        font-size: 25px;
+      }
+    }
+  }
+}

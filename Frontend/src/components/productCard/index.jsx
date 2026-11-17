@@ -156,6 +156,8 @@ function ProductCard({ product, showToast }) {
           <img
             src={`http://localhost:5000${product.image_url}`}
             alt={product.product_name}
+            loading="lazy"
+            decoding="async"
           />
         </div>
 
@@ -186,6 +188,8 @@ function ProductCard({ product, showToast }) {
         <button
           className="product-card__actions__wishlist-btn"
           onClick={handleAddWishlist}
+          aria-label={isLiked ? "Xóa khỏi danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
+          aria-pressed={isLiked}
           title="Thêm vào yêu thích"
         >
           <i className={`fa-${isLiked ? "solid" : "regular"} fa-heart`}></i>

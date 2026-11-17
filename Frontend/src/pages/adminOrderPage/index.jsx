@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
+import AdminButton from "../../components/adminButton";
 import "./style.scss";
 
 const AdminOrderPage = () => {
@@ -130,17 +131,19 @@ const AdminOrderPage = () => {
           <option value="Cancelled">Đã hủy</option>
         </select>
 
-        <button
-          className="admin-order-page__toolbar__reset"
+        <AdminButton
+          variant="ghost"
+          icon="fa-rotate-left"
           onClick={() => {
             setSearchTerm("");
             setStatusFilter("");
           }}
         >
           Xóa bộ lọc
-        </button>
+        </AdminButton>
       </div>
 
+      <div className="admin-table-wrap">
       <table className="admin-table">
         <thead>
           <tr>
@@ -172,31 +175,37 @@ const AdminOrderPage = () => {
                 </span>
               </td>
               <td>
-                <button
-                  className="admin-actions__view"
+                <AdminButton
+                  variant="secondary"
+                  size="sm"
+                  icon="fa-eye"
                   onClick={() => handleViewOrder(order.order_id)}
+                  aria-label={`Xem chi tiết đơn hàng ${order.order_id}`}
                 >
                   Chi tiết
-                </button>
+                </AdminButton>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
 
       {selectedOrder && (
-        <div className="admin-modal">
-          <div className="admin-modal__content">
+        <div className="admin-modal" role="presentation">
+          <div className="admin-modal__content" role="dialog" aria-modal="true" aria-label="Chi tiết đơn hàng">
             <div className="admin-modal__header">
               <h3>Chi tiết đơn hàng #DH{selectedOrder.order_id}</h3>
 
-              <button
-                type="button"
-                className="admin-modal__close"
+              <AdminButton
+                icon="fa-xmark"
+                iconOnly
+                variant="ghost"
                 onClick={closeModal}
+                aria-label="Đóng chi tiết đơn hàng"
+                title="Đóng"
               >
-                ×
-              </button>
+              </AdminButton>
             </div>
 
             <div className="admin-order-detail">

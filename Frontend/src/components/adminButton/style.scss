@@ -1,0 +1,132 @@
+.admin-button {
+  --button-bg: #fff;
+  --button-border: var(--admin-border, #dfe7e2);
+  --button-color: #344239;
+  min-height: 40px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--button-border);
+  border-radius: 8px;
+  background: var(--button-bg);
+  color: var(--button-color);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease,
+    box-shadow 150ms ease, transform 100ms ease;
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  i {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 16px;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--admin-primary, #006b3c);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(0, 107, 60, 0.16);
+  }
+
+  &:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &--primary {
+    --button-bg: var(--admin-primary, #006b3c);
+    --button-border: var(--admin-primary, #006b3c);
+    --button-color: #fff;
+
+    &:hover:not(:disabled) {
+      --button-bg: var(--admin-primary-dark, #004b2b);
+      --button-border: var(--admin-primary-dark, #004b2b);
+    }
+  }
+
+  &--secondary {
+    &:hover:not(:disabled) {
+      --button-bg: var(--admin-primary-soft, #e8f4ed);
+      --button-border: var(--admin-primary, #006b3c);
+      --button-color: var(--admin-primary-dark, #004b2b);
+    }
+  }
+
+  &--danger {
+    --button-bg: #fff;
+    --button-border: #e6b8b4;
+    --button-color: #a52a20;
+
+    &:hover:not(:disabled) {
+      --button-bg: #fff1f0;
+      --button-border: #d92d20;
+      --button-color: #8f2018;
+    }
+  }
+
+  &--ghost {
+    --button-bg: transparent;
+    --button-border: transparent;
+    --button-color: #59675f;
+
+    &:hover:not(:disabled) {
+      --button-bg: #eef3f0;
+      --button-color: var(--admin-text, #18221d);
+    }
+  }
+
+  &--sm {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 12px;
+
+    .admin-button__content {
+      gap: 6px;
+    }
+  }
+
+  &--icon-only {
+    width: 40px;
+    padding: 0;
+
+    &.admin-button--sm {
+      width: 34px;
+    }
+  }
+
+  &__spinner {
+    animation: admin-button-spin 750ms linear infinite;
+  }
+}
+
+@keyframes admin-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-button__spinner {
+    animation-duration: 1400ms;
+  }
+}

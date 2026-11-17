@@ -2,6 +2,64 @@
   background: #fff;
 }
 
+@media (max-width: 900px) {
+  .product-detail-container {
+    grid-template-columns: 1fr;
+    margin: 28px var(--page-gutter);
+  }
+
+  .product-tabs {
+    margin: 36px var(--page-gutter);
+  }
+}
+
+@media (max-width: 560px) {
+  .product-images {
+    flex-direction: column;
+
+    .thumb-list {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      order: 2;
+    }
+
+    .main-image {
+      order: 1;
+    }
+  }
+
+  .product-info h1 {
+    font-size: 24px;
+  }
+
+  .option-box .option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .action-buttons {
+    flex-direction: column;
+
+    .buy-now,
+    .add-cart {
+      width: 100%;
+    }
+  }
+
+  .product-tabs {
+    .tab-header span {
+      padding-inline: 8px;
+      font-size: 14px;
+    }
+
+    .tab-content {
+      padding-top: 22px;
+      font-size: 16px;
+    }
+  }
+}
+
 .product-detail-container {
   max-width: 1200px;
   margin: 30px auto;

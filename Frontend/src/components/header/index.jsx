@@ -169,8 +169,8 @@ const Header = () => {
                 }
               }}
             />
-            <button onClick={handleSearch}>
-              <i className="fa fa-search"></i>
+            <button onClick={handleSearch} aria-label="Tìm kiếm sản phẩm">
+              <i className="fa fa-search" aria-hidden="true"></i>
             </button>
           </div>
 
@@ -180,8 +180,10 @@ const Header = () => {
                 <button
                   className="icon-btn user-icon"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  aria-label="Mở menu tài khoản"
+                  aria-expanded={isUserMenuOpen}
                 >
-                  <i className="fa fa-user"></i>
+                  <i className="fa fa-user" aria-hidden="true"></i>
                 </button>
 
                 {isUserMenuOpen && (
@@ -216,12 +218,12 @@ const Header = () => {
                 )}
               </div>
 
-              <Link to="/wishlist" className="icon-btn">
-                <i className="fa fa-heart"></i>
+              <Link to="/wishlist" className="icon-btn" aria-label="Danh sách yêu thích">
+                <i className="fa fa-heart" aria-hidden="true"></i>
               </Link>
 
-              <Link to="/cart" className="icon-btn cart-icon">
-                <i className="fa fa-shopping-cart"></i>
+              <Link to="/cart" className="icon-btn cart-icon" aria-label={`Giỏ hàng, ${cartCount} sản phẩm`}>
+                <i className="fa fa-shopping-cart" aria-hidden="true"></i>
 
                 {cartCount > 0 && (
                   <span className="cart-badge">{cartCount}</span>

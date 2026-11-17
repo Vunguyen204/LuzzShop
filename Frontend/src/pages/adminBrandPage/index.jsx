@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
+import AdminButton from "../../components/adminButton";
 import "./style.scss";
 
 const AdminBrandPage = () => {
@@ -11,6 +12,7 @@ const AdminBrandPage = () => {
     status: 1,
   });
   const [editingId, setEditingId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const fetchbrands = async () => {
     try {
@@ -53,6 +55,7 @@ const AdminBrandPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
 
     try {
       if (editingId) {
@@ -71,6 +74,8 @@ const AdminBrandPage = () => {
     } catch (error) {
       console.log("Lỗi lưu thương hiệu:", error);
       alert("Lưu thương hiệu thất bại");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -104,28 +109,31 @@ const AdminBrandPage = () => {
         <h2>Quản lý thương hiệu</h2>
 
         {!isShowForm && (
-          <button
-            className="admin-brand-page__btn-add"
+          <AdminButton
+            variant="primary"
+            icon="fa-plus"
             onClick={handleShowAddForm}
           >
             Thêm thương hiệu
-          </button>
+          </AdminButton>
         )}
       </div>
 
       {isShowForm && (
-        <div className="admin-modal">
-          <div className="admin-modal__content">
+        <div className="admin-modal" role="presentation">
+          <div className="admin-modal__content" role="dialog" aria-modal="true" aria-label="Biểu mẫu thương hiệu">
             <div className="admin-modal__header">
               <h3>{editingId ? "Cập nhật thương hiệu" : "Thêm thương hiệu"}</h3>
 
-              <button
-                className="admin-modal__close"
+              <AdminButton
+                icon="fa-xmark"
+                iconOnly
+                variant="ghost"
                 onClick={resetForm}
-                type="button"
+                aria-label="Đóng biểu mẫu"
+                title="Đóng"
               >
-                ×
-              </button>
+              </AdminButton>
             </div>
 
             <form className="admin-form" onSubmit={handleSubmit}>
@@ -164,17 +172,17 @@ const AdminBrandPage = () => {
               </div>
 
               <div className="admin-form__actions">
-                <button className="admin-brand-page__btn-add" type="submit">
+                <AdminButton variant="primary" icon="fa-floppy-disk" type="submit" loading={isSaving}>
                   {editingId ? "Cập nhật" : "Lưu thương hiệu"}
-                </button>
+                </AdminButton>
 
-                <button
-                  type="button"
-                  className="admin-brand-page__btn-cancel"
+                <AdminButton
+                  variant="secondary"
+                  icon="fa-xmark"
                   onClick={resetForm}
                 >
                   Hủy
-                </button>
+                </AdminButton>
               </div>
             </form>
           </div>
@@ -208,6 +216,7 @@ const AdminBrandPage = () => {
         </div> */}
       </div>
 
+      <div className="admin-table-wrap">
       <table className="admin-table">
         <thead>
           <tr>
@@ -240,25 +249,32 @@ const AdminBrandPage = () => {
 
               <td>
                 <div className="admin-actions">
-                  <button
-                    className="admin-actions__edit"
+                  <AdminButton
+                    variant="secondary"
+                    size="sm"
+                    icon="fa-pen"
                     onClick={() => handleEdit(brand)}
+                    aria-label={`Sửa thương hiệu ${brand.brand_name}`}
                   >
                     Sửa
-                  </button>
+                  </AdminButton>
 
-                  <button
-                    className="admin-actions__delete"
+                  <AdminButton
+                    variant="danger"
+                    size="sm"
+                    icon="fa-trash-can"
                     onClick={() => handleDelete(brand.brand_id)}
+                    aria-label={`Xóa thương hiệu ${brand.brand_name}`}
                   >
                     Xóa
-                  </button>
+                  </AdminButton>
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

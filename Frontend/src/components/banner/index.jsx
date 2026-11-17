@@ -24,7 +24,8 @@ function Banner() {
       <div className="hero-banner__image">
         <img
           src="/images/banner2.jpg"
-          alt="Banner"
+          alt="Bộ sưu tập dụng cụ Pickleball chính hãng"
+          fetchPriority="high"
         />
       </div>
     </section>
