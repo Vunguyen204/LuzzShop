@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const upload = require("../middleware/uploadProduct");
+const { authenticate, requireAdmin } = require("../middleware/authMiddleware");
 
 // Lấy variant theo product
-router.get("/:productId", (req, res) => {
+router.get("/:productId", authenticate, requireAdmin, (req, res) => {
   const { productId } = req.params;
 
   const sql = `
@@ -27,7 +28,7 @@ router.get("/:productId", (req, res) => {
 });
 
 // Thêm variant
-router.post("/", (req, res) => {
+router.post("/", authenticate, requireAdmin, (req, res) => {
   const { product_id, color, size, stock, image_url } = req.body;
 
   const sql = `
@@ -55,7 +56,7 @@ router.post("/", (req, res) => {
 });
 
 // Sửa variant
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
   const { color, size, stock, image_url } = req.body;
 
@@ -80,7 +81,7 @@ router.put("/:id", (req, res) => {
 });
 
 // Xóa variant
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   const sql = `
@@ -103,7 +104,7 @@ router.delete("/:id", (req, res) => {
 });
 
 // Upload ảnh variant
-router.post("/upload/image", upload.single("image"), (req, res) => {
+router.post("/upload/image", authenticate, requireAdmin, upload.single("image"), (req, res) => {
   const brandSlug = req.body.brand_slug;
 
   if (!brandSlug) {

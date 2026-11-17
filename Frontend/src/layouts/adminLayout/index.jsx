@@ -1,7 +1,14 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Navigate, Outlet } from "react-router-dom";
 import "./style.scss";
 
 const AdminLayout = () => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  if (!token || Number(user?.role_id) !== 1) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="admin-page">
       <aside className="admin-sidebar">

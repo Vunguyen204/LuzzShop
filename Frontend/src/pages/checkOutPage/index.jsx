@@ -58,16 +58,12 @@ function CheckoutPage() {
       return;
     }
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
     try {
       const res = await axios.post("http://localhost:5000/api/orders", {
-        user_id: user?.user_id || null,
         full_name: formData.full_name,
         phone: formData.phone,
         address: formData.address,
         note: formData.note,
-        total_amount: totalAmount,
         items: cartItems,
       });
 

@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { authenticate, requireSelfOrAdmin } = require("../middleware/authMiddleware");
 
 // Lấy danh sách yêu thích theo user
-router.get("/:userId", (req, res) => {
+router.get("/:userId", authenticate, requireSelfOrAdmin("userId"), (req, res) => {
   const { userId } = req.params;
 
   const sql = `
@@ -51,8 +52,9 @@ router.get("/:userId", (req, res) => {
 });
 
 // Thêm sản phẩm vào yêu thích
-router.post("/", (req, res) => {
-  const { user_id, product_id } = req.body;
+router.post("/", authenticate, (req, res) => {
+  const { product_id } = req.body;
+  const user_id = req.user.user_id;
 
   if (!user_id || !product_id) {
     return res.status(400).json({
@@ -80,7 +82,7 @@ router.post("/", (req, res) => {
 });
 
 // Xóa sản phẩm khỏi yêu thích
-router.delete("/:userId/:productId", (req, res) => {
+router.delete("/:userId/:productId", authenticate, requireSelfOrAdmin("userId"), (req, res) => {
   const { userId, productId } = req.params;
 
   const sql = `
@@ -104,7 +106,7 @@ router.delete("/:userId/:productId", (req, res) => {
 });
 
 // Kiểm tra sản phẩm đã yêu thích chưa
-router.get("/check/:userId/:productId", (req, res) => {
+router.get("/check/:userId/:productId", authenticate, requireSelfOrAdmin("userId"), (req, res) => {
   const { userId, productId } = req.params;
 
   const sql = `

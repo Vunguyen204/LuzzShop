@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import ScrollToTop from "./components/scrollToTop/index.jsx";
 import ScrollTopButton from "./components/scrollToTopButton/index.jsx";
 import "./index.scss";
+import "./api/http.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

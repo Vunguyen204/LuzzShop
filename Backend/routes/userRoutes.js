@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { authenticate, requireAdmin, requireSelfOrAdmin } = require("../middleware/authMiddleware");
 
-router.get("/", (req, res) => {
+router.get("/", authenticate, requireAdmin, (req, res) => {
   const sql = `
     SELECT
       u.user_id,
@@ -25,7 +26,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get("/roles", (req, res) => {
+router.get("/roles", authenticate, requireAdmin, (req, res) => {
   const sql = `
     SELECT *
     FROM roles
@@ -39,7 +40,7 @@ router.get("/roles", (req, res) => {
   });
 });
 
-router.put("/:id/role", (req, res) => {
+router.put("/:id/role", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
   const { role_id } = req.body;
 
@@ -58,7 +59,7 @@ router.put("/:id/role", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticate, requireSelfOrAdmin("id"), (req, res) => {
   const { id } = req.params;
   const { full_name, phone, address } = req.body;
 
@@ -82,7 +83,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   const sql = `

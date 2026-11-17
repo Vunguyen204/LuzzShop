@@ -23,7 +23,7 @@ function Banner() {
 
       <div className="hero-banner__image">
         <img
-          src="/images/banner1.jpg"
+          src="/images/banner2.jpg"
           alt="Banner"
         />
       </div>

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const upload = require("../middleware/uploadProduct");
+const { authenticate, requireAdmin } = require("../middleware/authMiddleware");
 
 // Lấy tất cả sản phẩm
 router.get("/", (req, res) => {
@@ -75,7 +76,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get("/admin", (req, res) => {
+router.get("/admin", authenticate, requireAdmin, (req, res) => {
   const sql = `
     SELECT
       p.product_id,
@@ -292,7 +293,7 @@ router.get("/category/:slug", (req, res) => {
 });
 
 // Thêm sản phẩm
-router.post("/", (req, res) => {
+router.post("/", authenticate, requireAdmin, (req, res) => {
   const {
     category_id,
     brand_id,
@@ -350,7 +351,7 @@ router.post("/", (req, res) => {
 });
 
 // Upload ảnh sản phẩm
-router.post("/upload", upload.single("image"), (req, res) => {
+router.post("/upload", authenticate, requireAdmin, upload.single("image"), (req, res) => {
   const brandSlug = req.body.brand_slug;
 
   if (!brandSlug) {
@@ -372,7 +373,7 @@ router.post("/upload", upload.single("image"), (req, res) => {
 });
 
 // Cập nhật sản phẩm
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   const {
@@ -468,7 +469,7 @@ router.put("/:id", (req, res) => {
 //   });
 // });
 
-router.patch("/:id/status", (req, res) => {
+router.patch("/:id/status", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 

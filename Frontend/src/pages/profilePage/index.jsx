@@ -88,9 +88,7 @@ const ProfilePage = () => {
     try {
       await axios.patch(
         `http://localhost:5000/api/orders/${order.order_id}/cancel`,
-        {
-          user_id: user.user_id,
-        },
+        {},
       );
 
       alert("Hủy đơn hàng thành công");

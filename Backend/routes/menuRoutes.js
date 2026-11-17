@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { authenticate, requireAdmin } = require("../middleware/authMiddleware");
 
 router.get("/", (req, res) => {
   const sql = `
@@ -38,7 +39,7 @@ router.get("/active", (req, res) => {
   });
 });
 
-router.post("/", (req, res) => {
+router.post("/", authenticate, requireAdmin, (req, res) => {
   const { menu_name, slug, ordering, status } = req.body;
 
   const sql = `
@@ -60,7 +61,7 @@ router.post("/", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
   const { menu_name, slug, ordering, status } = req.body;
 
@@ -84,7 +85,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   const sql = `

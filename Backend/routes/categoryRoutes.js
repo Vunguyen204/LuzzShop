@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { authenticate, requireAdmin } = require("../middleware/authMiddleware");
 
 router.get("/", (req, res) => {
   const sql = `
@@ -68,7 +69,7 @@ router.get("/:slug", (req, res) => {
   });
 });
 
-router.post("/", (req, res) => {
+router.post("/", authenticate, requireAdmin, (req, res) => {
   const { category_name, slug, ordering, status } = req.body;
 
   const sql = `
@@ -91,7 +92,7 @@ router.post("/", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   const { category_name, slug, ordering, status } = req.body;
@@ -115,7 +116,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM categories WHERE category_id = ?", [id], (err) => {

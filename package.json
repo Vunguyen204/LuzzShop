@@ -2,5 +2,11 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n BACKEND,FRONTEND -c blue,green \"npm --prefix Backend start\" \"npm --prefix Frontend run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
   }
 }

@@ -53,9 +53,18 @@ exports.register = async (req, res) => {
 exports.login = (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ message: "Vui lòng nhập email và mật khẩu" });
+  }
+
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ message: "Máy chủ chưa cấu hình JWT_SECRET" });
+  }
+
   const sql = "SELECT * FROM users WHERE email = ?";
 
   db.query(sql, [email], async (err, result) => {
+    if (err) return res.status(500).json({ message: "Lỗi đăng nhập" });
     if (result.length === 0) {
       return res.status(400).json({
         message: "Email không tồn tại",
@@ -76,6 +85,7 @@ exports.login = (req, res) => {
       {
         id: user.user_id,
         email: user.email,
+        role_id: user.role_id,
       },
       process.env.JWT_SECRET,
       {

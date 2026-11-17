@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { authenticate, requireAdmin } = require("../middleware/authMiddleware");
 
 router.get("/", (req, res) => {
   const sql = `
@@ -18,7 +19,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.post("/", (req, res) => {
+router.post("/", authenticate, requireAdmin, (req, res) => {
   const { brand_name, slug, logo_url, status } = req.body;
 
   const sql = `
@@ -41,7 +42,7 @@ router.post("/", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticate, requireAdmin, (req, res) => {
   const { id } = req.params;
 
   const { brand_name, slug, logo_url, status } = req.body;
@@ -65,7 +66,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticate, requireAdmin, (req, res) => {
   db.query("DELETE FROM brands WHERE brand_id = ?", [req.params.id], (err) => {
     if (err) return res.status(500).json(err);
 

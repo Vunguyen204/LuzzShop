@@ -2,6 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { authenticate, requireAdmin } = require("../middleware/authMiddleware");
+
+router.use(authenticate, requireAdmin);
 
 router.get("/", (req, res) => {
   const sql = `
