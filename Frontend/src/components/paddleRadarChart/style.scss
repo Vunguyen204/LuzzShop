@@ -1,0 +1,15 @@
+.paddle-radar {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: linear-gradient(145deg, #fbfdfc, #eef7f2);
+
+  svg { width: 100%; max-width: 390px; display: block; margin: auto; overflow: visible; }
+  text { fill: #536158; font-size: 9px; font-weight: 700; }
+  &__grid { fill: none; stroke: #cbd9d1; stroke-width: 1; }
+  &__axis { stroke: #d7e2dc; stroke-width: 1; }
+  &__value { fill: rgba(0, 107, 60, .2); stroke: var(--admin-primary); stroke-width: 2.5; }
+  &__point { fill: var(--admin-primary); stroke: #fff; stroke-width: 2; }
+  figcaption { margin-top: 8px; color: var(--admin-muted); font-size: 12px; text-align: center; strong, span { display: block; } strong { color: var(--admin-primary-dark); } span { margin-top: 3px; } }
+}

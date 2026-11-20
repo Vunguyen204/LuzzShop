@@ -40,7 +40,7 @@ function LoginPage() {
       showToast("Đăng nhập thành công", "success");
 
       setTimeout(() => {
-        navigate("/");
+        navigate(Number(res.data.user?.role_id) === 1 ? "/admin/paddle-specs" : "/");
         window.location.reload();
       }, 1000);
     } catch (error) {

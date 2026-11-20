@@ -6,6 +6,7 @@ import "./style.scss";
 const navigation = [
   { to: "/admin", label: "Tổng quan", icon: "fa-chart-line", end: true },
   { to: "/admin/products", label: "Sản phẩm", icon: "fa-box-open" },
+  { to: "/admin/paddle-specs", label: "Thông số vợt", icon: "fa-table-list" },
   { to: "/admin/categories", label: "Danh mục", icon: "fa-layer-group" },
   { to: "/admin/brands", label: "Thương hiệu", icon: "fa-certificate" },
   { to: "/admin/menus", label: "Menu", icon: "fa-bars-staggered" },
@@ -14,6 +15,8 @@ const navigation = [
 ];
 
 const pageTitles = [
+  { path: "/admin/paddle-specs/", title: "Chi tiết thông số vợt" },
+  { path: "/admin/paddle-specs", title: "Quản lý thông số vợt" },
   { path: "/admin/products/", title: "Quản lý biến thể" },
   { path: "/admin/products", title: "Quản lý sản phẩm" },
   { path: "/admin/categories", title: "Quản lý danh mục" },

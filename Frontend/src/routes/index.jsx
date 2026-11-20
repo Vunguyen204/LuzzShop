@@ -20,6 +20,8 @@ import AdminProductPage from "../pages/adminProductPage";
 import AdminVariantPage from "../pages/adminVariantPage";
 import AdminOrderPage from "../pages/adminOrderPage";
 import AdminUserPage from "../pages/adminUserPage";
+import AdminPaddleSpecsPage from "../pages/adminPaddleSpecsPage";
+import AdminPaddleSpecDetailPage from "../pages/adminPaddleSpecDetailPage";
 
 export const ROUTERS = {
   USER: {
@@ -49,6 +51,8 @@ export const ROUTERS = {
     VARIANT: "products/:productId/variants",
     ORDER: "orders",
     USER: "users",
+    PADDLE_SPECS: "paddle-specs",
+    PADDLE_SPEC_DETAIL: "paddle-specs/:productId",
   },
 };
 
@@ -143,5 +147,13 @@ export const adminRoutes = [
   {
     path: ROUTERS.ADMIN.USER,
     component: AdminUserPage,
+  },
+  {
+    path: ROUTERS.ADMIN.PADDLE_SPECS,
+    component: AdminPaddleSpecsPage,
+  },
+  {
+    path: ROUTERS.ADMIN.PADDLE_SPEC_DETAIL,
+    component: AdminPaddleSpecDetailPage,
   },
 ];
